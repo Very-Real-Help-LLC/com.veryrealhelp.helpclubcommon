@@ -19,7 +19,12 @@ namespace VeryRealHelp.HelpClubCommon.Editor
 
             GUILayout.Space(12f);
             if (GUILayout.Button("Update from Current Scene"))
+            {
                 RenderSettingsFileApplier.UpdateFromActiveScene(Target);
+                EditorUtility.SetDirty(Target);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
         }
     }
 
