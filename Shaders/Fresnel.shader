@@ -18,7 +18,7 @@
 		{
 			Cull Off
 			Blend One One
-			ZTest Always
+			ZWrite Off
 
             CGPROGRAM
             #pragma vertex vert
