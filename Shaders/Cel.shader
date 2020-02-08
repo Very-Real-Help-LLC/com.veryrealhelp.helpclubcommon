@@ -25,7 +25,7 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma multi_complie_fog
+			#pragma multi_compile_fog
 
 			#include "UnityCG.cginc"
 			#include "HSV.cginc"
