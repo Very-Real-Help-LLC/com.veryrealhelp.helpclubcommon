@@ -1,7 +1,10 @@
 {
     "name": "com.veryrealhelp.helpclubcommon",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "displayName": "VRH Help Club Common",
     "description": "Shared resources for the various Help Club Unity projects.",
-    "unity": "2018.4"
+    "unity": "2018.4",
+    "dependencies": {
+        "com.unity.editorcoroutines": "0.1.0-preview.1"
+    }
 }

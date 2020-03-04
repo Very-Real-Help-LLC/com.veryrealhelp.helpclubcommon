@@ -1,7 +1,8 @@
 {
     "name": "VeryRealHelp.HelpClubCommon.Editor",
     "references": [
-        "VeryRealHelp.HelpClubCommon"
+        "VeryRealHelp.HelpClubCommon",
+        "Unity.EditorCoroutines.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
