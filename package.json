@@ -1,6 +1,6 @@
 {
     "name": "com.veryrealhelp.helpclubcommon",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "displayName": "VRH Help Club Common",
     "description": "Shared resources for the various Help Club Unity projects.",
     "unity": "2018.4",

@@ -235,7 +235,7 @@ namespace VRH
                     bool valid = true;
                     foreach (var renderer in FindObjectsOfType<Renderer>())
                         foreach (var material in renderer.sharedMaterials)
-                            if (material.passCount > 2)
+                            if (material != null && material.passCount > 2)
                             {
                                 valid = false;
                                 Debug.Log("GameObject '" + renderer.gameObject.name + "' with Material `" + material.name + "` uses shader `" + material.shader.name + "` with " + material.passCount + " passes.", material);
