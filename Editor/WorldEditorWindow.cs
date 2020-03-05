@@ -192,7 +192,7 @@ namespace VRH
         public CheckCollection sceneSuggestionChecks = new CheckCollection(
             new CheckCollection.Check(
                 "Light Probes", "Should be present",
-                () => LightmapSettings.lightProbes.count > 0
+                () => LightmapSettings.lightProbes != null && LightmapSettings.lightProbes.count > 0
             ),
             new CheckCollection.Check(
                 "Realtime Lights", "Should not be used",
