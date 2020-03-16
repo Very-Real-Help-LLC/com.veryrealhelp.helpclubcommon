@@ -8,6 +8,7 @@ You can do this by adding the following line to the `manifest.json` file in the 
 
 ```"com.veryrealhelp.helpclubcommon": "https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git#0.0.5"```
 
+_See the [releases page](https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon/releases) to find the most current version number._
 
 ### example manifest.json
 _Yours may vary_
