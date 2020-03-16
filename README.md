@@ -26,32 +26,21 @@ _Yours may vary_
 
 # Updating your package dependency to a new version
 
-After opening the project in Unity, the manifest file will be updated to pin the specific version of the dependency.
-
-To update to a newer version you must remove the lock in the manifest file then update the version number to the desired one.
+To update to a newer version, simply update the manifest file to the desired version number.
 
 ## example going from 0.0.4 to 0.0.5
-
-### remove lock
-
-```
-  "lock": {
-    "com.veryrealhelp.helpclubcommon": {
-      "hash": "b83e5a25f76618be22407f8130f40d449609425a",
-      "revision": "0.0.4"
-    }
-  }
-```
-
-becomes 
-```
-  "lock": {}
-```
-
-### update version number
 
 ```"com.veryrealhelp.helpclubcommon": "https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git#0.0.4"```
 
 becomes
 
 ```"com.veryrealhelp.helpclubcommon": "https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git#0.0.5"```
+
+# Contributing
+
+## Releasing a New Version
+
+To release a new version, involves two steps:
+
+1. First modify the `package.json` file's `version` property to reflect the new version number.
+2. Create a release (tag) in github with the name of the version _(i.e. the release for version 0.0.7 would be named `0.0.7`)
