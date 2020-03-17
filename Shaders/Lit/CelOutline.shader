@@ -1,4 +1,4 @@
-﻿Shader "VeryRealHelp/Lit/Cel"
+﻿Shader "VeryRealHelp/Lit/Cel Outline"
 {
     Properties
     {
@@ -11,6 +11,9 @@
 		_PosterizeLevels("Posterize Levels", Float) = 3
 		_PosterizeMix("Posterize Intensity", Range(0,1)) = 1
 		_PosterizeValuePower("Posterize Brightness", Range(-1,1)) = 0
+		[HDR]
+		_OutlineColor("Outline Color", Color) = (0,0,0,1)
+		_OutlineSize("Outline Size", Float) = 0.015
 	}
 	SubShader
 	{
@@ -22,13 +25,59 @@
 
 		Pass
 		{
+			//ZWrite Off
+			Cull Front
+			//Offset 0, -1
+			//ZTest Always
+
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile_fog
 
 			#include "UnityCG.cginc"
-			#include "HSV.cginc"
+
+			fixed4 _OutlineColor;
+			fixed _OutlineSize;
+
+
+			struct VertexInput
+			{
+				float4 position : POSITION;
+				float3 normal : NORMAL;
+			};
+
+			struct VertexOutput
+			{
+				float4 position : SV_POSITION;
+				UNITY_FOG_COORDS(1)
+			};
+
+
+			VertexOutput vert(VertexInput v)
+			{
+				VertexOutput o;
+				o.position = UnityObjectToClipPos(v.position + v.normal * _OutlineSize);
+				UNITY_TRANSFER_FOG(o, o.position);
+				return o;
+			}
+
+			fixed4 frag(VertexOutput i) : SV_Target
+			{
+				return _OutlineColor;
+			}
+				ENDCG
+		}
+
+		Pass
+		{
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			#pragma multi_compile_fog
+
+			#include "UnityCG.cginc"
+			#include "../Lib/HSV.cginc"
 			#include "UnityLightingCommon.cginc"
 
 			sampler2D _MainTex;
