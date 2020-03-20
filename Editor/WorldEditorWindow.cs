@@ -372,13 +372,22 @@ namespace VRH
         private IEnumerator BuildBundlesCoroutine()
         {
             isBuilding = true;
+
             buildingStatus = "Building Android Bundles...";
             yield return null;
             BuildScript.BuildBundlesAndroid();
             yield return null;
+
             buildingStatus = "Building Standalone Windows Bundles...";
             yield return null;
             BuildScript.BuildBundlesStandaloneWindows();
+            yield return null;
+
+            buildingStatus = "Building Standalone OSX Bundles...";
+            yield return null;
+            BuildScript.BuildBundlesStandaloneOSX();
+            yield return null;
+
             buildingStatus = "Done";
             isBuilding = false;
         }
