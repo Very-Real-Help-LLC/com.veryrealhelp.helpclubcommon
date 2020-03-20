@@ -233,13 +233,16 @@ namespace VRH
                 "Shaders", "Should use 2 or fewer passes",
                 () => {
                     bool valid = true;
+                    HashSet<Material> materials = new HashSet<Material>();
                     foreach (var renderer in FindObjectsOfType<Renderer>())
                         foreach (var material in renderer.sharedMaterials)
                             if (material != null && material.passCount > 2)
                             {
                                 valid = false;
-                                Debug.Log("GameObject '" + renderer.gameObject.name + "' with Material `" + material.name + "` uses shader `" + material.shader.name + "` with " + material.passCount + " passes.", material);
+                                materials.Add(material);
                             }
+                    foreach (Material material in materials)
+                        Debug.Log("Material " + material.name + " uses shader " + material.shader.name + " with " + material.passCount + " passes", material);
                     return valid;
                 }
             )
