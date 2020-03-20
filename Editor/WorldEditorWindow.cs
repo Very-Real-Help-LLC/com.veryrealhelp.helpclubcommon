@@ -230,13 +230,13 @@ namespace VRH
                 () => LightmapSettings.lightmaps.Length <= 2
             ),
             new CheckCollection.Check(
-                "Shaders", "Should use 2 or fewer passes",
+                "Shaders", "Should use 3 or fewer passes",
                 () => {
                     bool valid = true;
                     HashSet<Material> materials = new HashSet<Material>();
                     foreach (var renderer in FindObjectsOfType<Renderer>())
                         foreach (var material in renderer.sharedMaterials)
-                            if (material != null && material.passCount > 2)
+                            if (material != null && material.passCount > 3)
                             {
                                 valid = false;
                                 materials.Add(material);
