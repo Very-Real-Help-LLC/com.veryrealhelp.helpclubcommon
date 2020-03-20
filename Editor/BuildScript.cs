@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -31,7 +32,9 @@ namespace VRH
         public static void BuildBundlesAndroid()
         {
             Debug.Log("Building Android Bundles...");
-            BuildPipeline.BuildAssetBundles("AssetBundles/Android", bundleOptions, BuildTarget.Android);
+            string directory = "AssetBundles/Android";
+            Directory.CreateDirectory(directory);
+            BuildPipeline.BuildAssetBundles(directory, bundleOptions, BuildTarget.Android);
             Debug.Log("Finished Building Android Bundles");
         }
 
@@ -39,7 +42,9 @@ namespace VRH
         public static void BuildBundlesStandaloneWindows()
         {
             Debug.Log("Building Standalone Windows Bundles...");
-            BuildPipeline.BuildAssetBundles("AssetBundles/StandaloneWindows", bundleOptions, BuildTarget.StandaloneWindows);
+            string directory = "AssetBundles/StandaloneWindows";
+            Directory.CreateDirectory(directory);
+            BuildPipeline.BuildAssetBundles(directory, bundleOptions, BuildTarget.StandaloneWindows);
             Debug.Log("Finished Building Standalone Windows Bundles");
         }
 
@@ -47,7 +52,9 @@ namespace VRH
         public static void BuildBundlesStandaloneOSX()
         {
             Debug.Log("Building Standalone OSX Bundles...");
-            BuildPipeline.BuildAssetBundles("AssetBundles/StandaloneOSX", bundleOptions, BuildTarget.StandaloneOSX);
+            string directory = "AssetBundles/StandaloneOSX";
+            Directory.CreateDirectory(directory);
+            BuildPipeline.BuildAssetBundles(directory, bundleOptions, BuildTarget.StandaloneOSX);
             Debug.Log("Finished Building Standalone OSX Bundles");
         }
 
