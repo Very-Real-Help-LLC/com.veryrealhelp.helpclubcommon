@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 namespace VeryRealHelp.HelpClubCommon
 {
 
-    [CreateAssetMenu(fileName = "Render Settings", menuName = "VRH/Common/Render Settings File", order = 1)]
+    [CreateAssetMenu(fileName = "Render Settings", menuName = "Very Real Help/Worlds/Render Settings File", order = 1)]
     public class RenderSettingsFile : ScriptableObject
     {
         public Material skybox;

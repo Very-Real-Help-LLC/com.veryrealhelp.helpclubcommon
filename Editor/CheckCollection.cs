@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace VRH
+namespace VeryRealHelp.HelpClubCommon.Editor
 {
 
     public class CheckCollection

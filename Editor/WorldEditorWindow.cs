@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace VRH
+namespace VeryRealHelp.HelpClubCommon.Editor
 {
     public class WorldEditorWindow : EditorWindow
     {

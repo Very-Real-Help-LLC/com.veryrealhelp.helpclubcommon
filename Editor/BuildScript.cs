@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace VRH
+namespace VeryRealHelp.HelpClubCommon.Editor
 {
 
     public static class BuildScript
