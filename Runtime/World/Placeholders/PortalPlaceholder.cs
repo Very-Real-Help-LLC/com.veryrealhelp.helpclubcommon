@@ -7,21 +7,6 @@ namespace VeryRealHelp.HelpClubCommon.World
 {
     public class PortalPlaceholder : Placeholder
     {
-        public enum WorldId
-        {
-            Home,
-            Hub,
-            Locker,
-            Halloween,
-            ArtGallery,
-            Library,
-            Metropia,
-            PublicHome,
-            SecretHub,
-            TreeHouse,
-            Campfire,
-        }
-
         private static readonly Vector3 portalSize = new Vector3(1.9f, 2.5f, 0.1f);
 
         public WorldId worldId;
