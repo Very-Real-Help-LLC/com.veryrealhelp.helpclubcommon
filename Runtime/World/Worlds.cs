@@ -18,7 +18,9 @@ namespace VeryRealHelp.HelpClubCommon.World
         PublicHome = 7,
         SecretWorld = 8,
         Treehouse = 9,
-        Campfire = 10
+        Campfire = 10,
+        IceIsland = 11,
+        BeachIsland = 12
     }
 
 }
