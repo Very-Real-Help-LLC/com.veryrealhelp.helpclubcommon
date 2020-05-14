@@ -20,7 +20,8 @@ namespace VeryRealHelp.HelpClubCommon.World
         Treehouse = 9,
         Campfire = 10,
         IceIsland = 11,
-        BeachIsland = 12
+        BeachIsland = 12,
+        Void = 13
     }
 
 }
