@@ -7,8 +7,11 @@ namespace VeryRealHelp.HelpClubCommon
     [CreateAssetMenu(fileName = "Render Settings", menuName = "Very Real Help/Worlds/Render Settings File", order = 1)]
     public class RenderSettingsFile : ScriptableObject
     {
+        [Header("Camera")]
         public Material skybox;
+        public float farClipPlane = 1000;
 
+        [Header("Lighting")]
         public AmbientMode ambientMode;
         [ColorUsage(true, true)]
         public Color ambientLight;
@@ -21,6 +24,7 @@ namespace VeryRealHelp.HelpClubCommon
         [Range(0f, 8f)]
         public float ambientIntensity;
 
+        [Header("Fog")]
         public bool fog;
         [ColorUsage(true, true)]
         public Color fogColor;

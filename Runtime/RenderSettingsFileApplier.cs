@@ -18,6 +18,8 @@ namespace VeryRealHelp.HelpClubCommon
         public static void ApplyToActiveScene(RenderSettingsFile file)
         {
             RenderSettings.skybox = file.skybox;
+            if (Camera.main != null)
+                Camera.main.farClipPlane = file.farClipPlane;
 
             RenderSettings.ambientMode = file.ambientMode;
             RenderSettings.ambientLight = file.ambientLight;
@@ -37,6 +39,7 @@ namespace VeryRealHelp.HelpClubCommon
         public static void UpdateFromActiveScene(RenderSettingsFile file)
         {
             file.skybox = RenderSettings.skybox;
+            file.farClipPlane = (Camera.main?.farClipPlane) ?? 1000;
 
             file.ambientMode = RenderSettings.ambientMode;
             file.ambientLight = RenderSettings.ambientLight;
