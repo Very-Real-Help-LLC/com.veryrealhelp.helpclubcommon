@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace VeryRealHelp.HelpClubCommon.Editor
 {
-
-    public class CheckCollection
+    public class CheckCollection : IEnumerable<CheckCollection.Check>
     {
         public class Check
         {
@@ -25,6 +26,9 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 this.test = test;
                 this.fix = fix;
             }
+
+            public bool Test() => test();
+            public void Fix() => fix.Invoke();
         }
 
         public Check[] checks;
@@ -34,6 +38,16 @@ namespace VeryRealHelp.HelpClubCommon.Editor
 
         public Check[] UpdateInvalidCache() => invalidCache = checks.Where(c => !c.test()).ToArray();
 
+        public IEnumerator<Check> GetEnumerator()
+        {
+            foreach (var check in checks)
+                yield return check;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
 }
