@@ -9,41 +9,26 @@ namespace VeryRealHelp.HelpClubCommon.Editor
 {
     public static class WorldValidator
     {
-        public static void ValidateAll()
+        [MenuItem("VRH/Worlds/Validate All Worlds")]
+        public static bool ValidateAll()
         {
             if (Application.isBatchMode)
                 Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-            Debug.Log("Validating all worlds", null);
+            Debug.Log("Validating all worlds");
             var guids = AssetDatabase.FindAssets("t:WorldInfo");
-            foreach (var guid in guids)
-                ValidateWorld(AssetDatabase.GUIDToAssetPath(guid));
+            bool[] results = Array.ConvertAll(guids, guid => ValidateWorld(AssetDatabase.GUIDToAssetPath(guid)));
+            return Array.TrueForAll(results, value => value);
         }
 
-        public static void ValidateWorld(string assetPath) => ValidateWorld(AssetDatabase.LoadAssetAtPath<WorldInfo>(assetPath));
+        public static bool ValidateWorld(string assetPath) => ValidateWorld(AssetDatabase.LoadAssetAtPath<WorldInfo>(assetPath));
 
-        public static void ValidateWorld(WorldInfo worldInfo)
+        public static bool ValidateWorld(WorldInfo worldInfo)
         {
             if (Application.isBatchMode)
                 Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-            Debug.Log(string.Format("Validating world {0} (scene: {1})", worldInfo.portalLabel, worldInfo.sceneAssetName), null);
-            var guids = AssetDatabase.FindAssets(string.Format("{0} t:SceneAsset", worldInfo.sceneAssetName));
-            string scenePath = null;
-            foreach (var guid in guids)
-            {
-                scenePath = AssetDatabase.GUIDToAssetPath(guid);
-                Debug.Log(string.Format("Found scene {0}", scenePath), null);
-            }
-            if (guids.Length > 1)
-            {
-                Debug.LogError(string.Format("Found more than one scene named {0}", worldInfo.sceneAssetName), null);
-                return;
-            }
-            else if (guids.Length == 0)
-            {
-                Debug.LogError(string.Format("Could not find scene named {0}", worldInfo.sceneAssetName), null);
-                return;
-            }
-            EditorSceneManager.OpenScene(scenePath);
+            Debug.LogFormat("Validating world {0} (scene: {1})", worldInfo.portalLabel, worldInfo.sceneAssetName);
+            
+            EditorSceneManager.OpenScene(worldInfo.sceneAssetName);
             var collections = new CheckCollection[]
             {
                 settingsChecks,
@@ -57,7 +42,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                     bool passed = false;
                     ++count;
                     if (check.Test()) {
-                        Debug.Log(string.Format("[PASS] {0}", check.label), null);
+                        Debug.LogFormat("[PASS] {0}", check.label);
                         passed = true;
                     }
                     else if (check.fix != null)
@@ -65,21 +50,22 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                         check.Fix();
                         if (check.Test())
                         {
-                            Debug.Log(string.Format("[PASS] (FIXED AUTOMATICALLY) {0} : {1}", check.label, check.invalidMessage), null);
+                            Debug.LogFormat("[PASS] (FIXED AUTOMATICALLY) {0} : {1}", check.label, check.invalidMessage);
                             passed = true;
                         }
                     }
                     if (!passed) {
-                        Debug.Log(string.Format("[FAIL] {0}: {1}", check.label, check.invalidMessage), null);
+                        Debug.LogFormat("[FAIL] {0}: {1}", check.label, check.invalidMessage);
                         ++failures;
                     }
                 }
             System.Console.WriteLine();
             if (failures > 0)
-                Debug.Log(string.Format("Failed {0}/{1} checks.", failures, count), null);
+                Debug.LogFormat("Failed {0}/{1} checks.", failures, count);
             else
-                Debug.Log(string.Format("Passed all {0} checks.", count), null);
+                Debug.LogFormat("Passed all {0} checks.", count);
             System.Console.WriteLine();
+            return failures == 0;
         }
 
         #region Check Collections

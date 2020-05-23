@@ -10,6 +10,8 @@ namespace VeryRealHelp.HelpClubCommon.Editor
     {
         public static void PrepareAllForBuildSynchronously()
         {
+            if (Application.isBatchMode)
+                Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Debug.Log("Preparing WorldInfo objects for build...");
             void RunToCompletion(IEnumerator coroutine) {
                 while (coroutine.MoveNext())
@@ -22,7 +24,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             DescribeWorldInfos();
         }
 
-        [MenuItem("Test/PrepareAllForBuild")]
+        [MenuItem("VRH/Worlds/Prepare All WorldInfos")]
         public static EditorCoroutine PrepareAllForBuild()
         {
             return EditorCoroutineUtility.StartCoroutineOwnerless(PrepareAllForBuildCoroutine());
@@ -46,6 +48,24 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 if (packageInfo.name == "com.veryrealhelp.helpclubcommon")
                     worldInfo.helpClubCommonVersion = packageInfo.version;
             worldInfo.buildProcess = GetCurrentBuildProcess();
+            if (worldInfo.sceneAsset == null)
+                Debug.LogError("WorldInfo is missing Scene Asset");
+            worldInfo.sceneAssetName = AssetDatabase.GetAssetPath(worldInfo.sceneAsset);
+            worldInfo.sceneBundle = AssetDatabase.GetImplicitAssetBundleName(worldInfo.sceneAssetName);
+            worldInfo.bundleDependencies = AssetDatabase.GetAssetBundleDependencies(worldInfo.sceneBundle, true);
+            EditorUtility.SetDirty(worldInfo);
+            AssetDatabase.SaveAssets();
+        }
+
+        private static string GetSceneAssetBundleName(SceneAsset sceneAsset)
+        {
+            var sceneAssetPath = AssetDatabase.GetAssetPath(sceneAsset);
+            foreach (var bundleName in AssetDatabase.GetAllAssetBundleNames())
+                foreach (var path in AssetDatabase.GetAssetPathsFromAssetBundle(bundleName))
+                    if (path == sceneAssetPath)
+                        return bundleName;
+            Debug.LogError("WorldInfo.sceneAsset does not belong to any bundles.");
+            return null;
         }
 
         private static WorldInfo.BuildProcess GetCurrentBuildProcess()
@@ -57,7 +77,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             return WorldInfo.BuildProcess.Unknown;
         }
 
-        [MenuItem("Test/Describe WorldInfos")]
+        [MenuItem("VRH/Worlds/Describe All WorldInfos")]
         public static void DescribeWorldInfos()
         {
             foreach (var guid in AssetDatabase.FindAssets("t:WorldInfo"))

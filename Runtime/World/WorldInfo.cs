@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using UnityEngine;
 
 namespace VeryRealHelp.HelpClubCommon.World
 {
@@ -13,15 +16,21 @@ namespace VeryRealHelp.HelpClubCommon.World
         }
 
         [Header("General")]
+        #if UNITY_EDITOR
+        public SceneAsset sceneAsset;
+        #endif
         public string portalLabel;
         public Texture portalTexture;
-        public string sceneBundle;
-        public string sceneAssetName;
-        public string[] bundleDependencies;
 
         [Header("Voice")]
         public float voiceProximityRange;
 
+        [HideInInspector]
+        public string sceneBundle;
+        [HideInInspector]
+        public string sceneAssetName;
+        [HideInInspector]
+        public string[] bundleDependencies;
         [HideInInspector]
         public int buildTimestamp;
         [HideInInspector]
