@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [build]
+
+
+jobs:
+  build:    
+    name: Build0
+    runs-on: self-hosted
+    strategy:
+      fail-fast: true
+      matrix:
+        projectPath: 
+          - .
+        targetPlatform:
+          - StandaloneWindows
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run jobRunnerPowershell script
+        run: .\runner_job.ps1
+        shell: powershell
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Build00
+          path: BuildTest       
