@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace VeryRealHelp.HelpClubCommon.Editor.Build
+namespace VeryRealHelp.HelpClubCommon.Editor.Automation
 {
     static class BatchBuild
     {
