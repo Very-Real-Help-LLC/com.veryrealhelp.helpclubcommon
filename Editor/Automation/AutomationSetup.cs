@@ -44,6 +44,7 @@ public static class AutomationSetup
 
     private static void SetupGithubWorkflow()
     {
+        Directory.CreateDirectory(Path.GetDirectoryName(githubWorkflowActualPath));
         File.Copy(githubWorkflowTemplatePath, githubWorkflowActualPath, true);
     }
 
@@ -68,7 +69,7 @@ public static class AutomationSetup
         {
             if (actual.Length != template.Length)
             {
-                Debug.LogFormat("Lengths do not match: {0} : {1} & {2} : {3}", template.Length, templatePath, actual.Length, githubWorkflowActualPath);
+                Debug.LogFormat("Lengths do not match: {0} : {1} & {2} : {3}", template.Length, templatePath, actual.Length, actualPath);
                 return false;
             }
             else
