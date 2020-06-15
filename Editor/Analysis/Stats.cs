@@ -197,7 +197,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             if (enabled)
             {
                 var renderers = Object.FindObjectsOfType<Renderer>();
-                var materials = renderers.SelectMany(r => r.sharedMaterials).GroupBy(m => m?.GetInstanceID());
+                var materials = renderers.SelectMany(r => r.sharedMaterials).Where(m => m != null).GroupBy(m => m?.GetInstanceID());
                 var materialUsages = materials.Select(g => new MaterialUsage(g));
                 rendererCount = renderers.Count();
                 materialCount = materials.Count();
@@ -297,7 +297,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             if (enabled)
             {
                 var meshFilters = Object.FindObjectsOfType<MeshRenderer>();
-                var meshes = meshFilters.Select(f => f.GetComponent<MeshFilter>().sharedMesh).GroupBy(m => m?.GetInstanceID());
+                var meshes = meshFilters.Select(f => f.GetComponent<MeshFilter>()?.sharedMesh).GroupBy(m => m?.GetInstanceID());
                 var meshUsages = meshes.Select(g => new MeshUsage(g));
                 filterCount = meshFilters.Count();
                 meshCount = meshes.Count();
