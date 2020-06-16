@@ -296,8 +296,8 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         {
             if (enabled)
             {
-                var meshFilters = Object.FindObjectsOfType<MeshRenderer>();
-                var meshes = meshFilters.Select(f => f.GetComponent<MeshFilter>()?.sharedMesh).GroupBy(m => m?.GetInstanceID());
+                var meshFilters = Object.FindObjectsOfType<MeshRenderer>().Select(r => r.GetComponent<MeshFilter>()).Where(f => f != null);
+                var meshes = meshFilters.Select(f => f.sharedMesh).GroupBy(m => m?.GetInstanceID());
                 var meshUsages = meshes.Select(g => new MeshUsage(g));
                 filterCount = meshFilters.Count();
                 meshCount = meshes.Count();
