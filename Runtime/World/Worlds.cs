@@ -21,7 +21,8 @@ namespace VeryRealHelp.HelpClubCommon.World
         Campfire = 10,
         IceIsland = 11,
         BeachIsland = 12,
-        Void = 13
+        Void = 13,
+        Theater = 14
     }
 
 }
