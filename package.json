@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git",
-    "revision": "0.3.6"
+    "revision": "0.3.8"
   },
   "dependencies": {
     "com.unity.editorcoroutines": "0.1.0-preview.1",
