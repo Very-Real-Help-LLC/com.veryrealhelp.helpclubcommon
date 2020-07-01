@@ -32,6 +32,9 @@ namespace VeryRealHelp.HelpClubCommon
         public float fogDensity;
         public float fogStartDistance;
         public float fogEndDistance;
+
+
+        public static RenderSettingsFile Defaults => new RenderSettingsFile();
     }
 
 }
