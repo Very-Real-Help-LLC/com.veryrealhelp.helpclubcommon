@@ -98,10 +98,31 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                 else
                     throw new Exception("Validation Failed");
 
-            DoBuild(BuildTarget.StandaloneWindows);
-            DoBuild(BuildTarget.StandaloneOSX);
-            DoBuild(BuildTarget.Android);
 
+            ParseCommandLineArguments(out var validatedOptions);
+
+            //Build for all if no specific tags provided
+            if(!validatedOptions.ContainsKey("android") && !validatedOptions.ContainsKey("win") && !validatedOptions.ContainsKey("osx"))
+            {
+                DoBuild(BuildTarget.Android);
+                DoBuild(BuildTarget.StandaloneWindows);
+                DoBuild(BuildTarget.StandaloneOSX);
+            }
+            else
+            {
+                if(validatedOptions.ContainsKey("android"))
+                {
+                    DoBuild(BuildTarget.Android);
+                }
+                if (validatedOptions.ContainsKey("win"))
+                {
+                    DoBuild(BuildTarget.StandaloneWindows);
+                }
+                if (validatedOptions.ContainsKey("osx"))
+                {
+                    DoBuild(BuildTarget.StandaloneOSX);
+                }
+            }
 
             if (Application.isBatchMode)
                 ExitWithResult(BuildResult.Succeeded);
@@ -116,8 +137,6 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             Directory.CreateDirectory(directory);
             BuildAssetBundleOptions bundleOptions = BuildAssetBundleOptions.ForceRebuildAssetBundle & BuildAssetBundleOptions.StrictMode & BuildAssetBundleOptions.ChunkBasedCompression;
             BuildPipeline.BuildAssetBundles(directory, bundleOptions, buildTarg);
-
-
 
         }
 

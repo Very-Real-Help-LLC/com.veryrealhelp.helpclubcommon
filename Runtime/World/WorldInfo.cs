@@ -41,5 +41,7 @@ namespace VeryRealHelp.HelpClubCommon.World
         public string helpClubCommonVersion;
         [HideInInspector]
         public BuildProcess buildProcess;
+        [HideInInspector]
+        public string buildNumber;
     }
 }

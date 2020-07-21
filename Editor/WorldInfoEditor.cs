@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEditor;
 using VeryRealHelp.HelpClubCommon.World;
@@ -53,6 +54,13 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             worldInfo.sceneAssetName = AssetDatabase.GetAssetPath(worldInfo.sceneAsset);
             worldInfo.sceneBundle = AssetDatabase.GetImplicitAssetBundleName(worldInfo.sceneAssetName);
             worldInfo.bundleDependencies = AssetDatabase.GetAssetBundleDependencies(worldInfo.sceneBundle, true);
+
+            string isActionTriggered = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
+            if(isActionTriggered == "true")
+            {
+                worldInfo.buildNumber = Environment.GetEnvironmentVariable("GITHUB_SHA");
+            }
+            
             EditorUtility.SetDirty(worldInfo);
             AssetDatabase.SaveAssets();
         }
