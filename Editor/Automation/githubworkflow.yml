@@ -21,7 +21,7 @@ jobs:
       - name: Run jobRunnerPowershell script
         run: .\runner_job.ps1
         shell: powershell
-      - uses: actions/upload-artifact@v1
+      - uses: rennat/upload-s3-action@master
         with:
           AWS_S3_BUCKET: 'vrh-test'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
