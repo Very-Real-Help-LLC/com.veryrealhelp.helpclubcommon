@@ -58,7 +58,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             string isActionTriggered = Environment.GetEnvironmentVariable("GITHUB_ACTIONS");
             if(isActionTriggered == "true")
             {
-                worldInfo.buildNumber = Environment.GetEnvironmentVariable("GITHUB_SHA");
+                worldInfo.buildNumber = Environment.GetEnvironmentVariable("GITHUB_REF");
             }
             
             EditorUtility.SetDirty(worldInfo);
