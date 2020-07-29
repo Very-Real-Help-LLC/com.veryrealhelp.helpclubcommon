@@ -22,7 +22,8 @@ namespace VeryRealHelp.HelpClubCommon.World
         IceIsland = 11,
         BeachIsland = 12,
         Void = 13,
-        Theater = 14
+        Theater = 14,
+        HikingTrail = 15,
     }
 
 }
