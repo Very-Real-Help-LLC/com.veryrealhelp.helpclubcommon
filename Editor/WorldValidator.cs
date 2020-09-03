@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -144,6 +145,17 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             new CheckCollection.Check(
                 "Reflection Probes", "Should have one",
                 () => UnityEngine.Object.FindObjectsOfType<ReflectionProbe>().Length == 1
+            ),
+            new CheckCollection.Check(
+                "Audio Source Settings", "All Audio Sources have Settings",
+                () => UnityEngine.Object.FindObjectsOfType<AudioSource>()
+                    .Select(x => x.GetComponent<Audio.AudioSourceSettings>())
+                    .Where(x => x == null)
+                    .Count() == 0,
+                () => UnityEngine.Object.FindObjectsOfType<AudioSource>()
+                    .Where(x => x.GetComponent<Audio.AudioSourceSettings>() == null)
+                    .ToList()
+                    .ForEach(x => x.gameObject.AddComponent<Audio.AudioSourceSettings>())
             )
         );
 
