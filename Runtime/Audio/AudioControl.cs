@@ -8,7 +8,8 @@ namespace VeryRealHelp.HelpClubCommon.Audio
         Music,
         Effects,
         Interface,
-        Voice
+        Voice,
+        Video
     }
 
     public delegate void AudioSourceSettingsDelegate(AudioSourceSettings settings);
