@@ -24,6 +24,11 @@ namespace VeryRealHelp.HelpClubCommon.World
         Void = 13,
         Theater = 14,
         HikingTrail = 15,
+        FractalWorld = 16,
+        FractalWorld2 = 17,
+        FractalWorld3 = 18,
+        FractalWorld4 = 19,
+        FractalWorld5 = 20,
     }
 
 }
