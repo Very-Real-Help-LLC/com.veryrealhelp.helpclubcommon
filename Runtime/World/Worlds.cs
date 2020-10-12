@@ -29,6 +29,7 @@ namespace VeryRealHelp.HelpClubCommon.World
         FractalWorld3 = 18,
         FractalWorld4 = 19,
         FractalWorld5 = 20,
+        Halloween2020 = 21
     }
 
 }
