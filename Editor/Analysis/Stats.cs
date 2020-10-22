@@ -227,7 +227,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 count = group.Count();
                 mesh = group.First();
                 triangleCount = mesh.triangles.Length / 3;
-                sceneTriangles = group.Count() * mesh.triangles.Length / 3;
+                sceneTriangles = group.Count() * triangleCount;
             }
         }
 
@@ -298,7 +298,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             {
                 var meshFilters = Object.FindObjectsOfType<MeshRenderer>().Select(r => r.GetComponent<MeshFilter>()).Where(f => f != null);
                 var meshes = meshFilters.Select(f => f.sharedMesh).GroupBy(m => m?.GetInstanceID());
-                var meshUsages = meshes.Select(g => new MeshUsage(g));
+                var meshUsages = meshes.Where(g=>g.FirstOrDefault() != null).Select(g => new MeshUsage(g));
                 filterCount = meshFilters.Count();
                 meshCount = meshes.Count();
                 usedMeshes = meshUsages.OrderBy(u => -u.sceneTriangles).ToArray();

@@ -27,26 +27,53 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 this.fix = fix;
             }
 
+            public bool HasFix => fix != null;
             public bool Test() => test();
             public void Fix() => fix.Invoke();
         }
 
-        public Check[] checks;
-        public Check[] invalidCache;
+        public class Result
+        {
+            public Check check;
+            public bool passed;
+            public bool autoFixed;
+        }
+
+        private IEnumerable<Check> checks;
+        private Func<IEnumerable<Check>> checkEnumerator;
+        public IEnumerable<Check> Checks { get => checkEnumerator != null ? checkEnumerator() : checks; }
+
+        public CheckCollection(Func<IEnumerable<Check>> checkEnumerator) => this.checkEnumerator = checkEnumerator;
 
         public CheckCollection(params Check[] checks) => this.checks = checks;
 
-        public Check[] UpdateInvalidCache() => invalidCache = checks.Where(c => !c.test()).ToArray();
+        public CheckCollection Concat(params CheckCollection[] others) => new CheckCollection(Checks.Concat(others.SelectMany(x => x.Checks)).ToArray());
 
         public IEnumerator<Check> GetEnumerator()
         {
-            foreach (var check in checks)
+            foreach (var check in Checks)
                 yield return check;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public IEnumerable<Result> GetResults(bool applyAutoFixes = false)
         {
-            return GetEnumerator();
+            return Checks.Select(check => {
+                var passed = check.Test();
+                bool autoFixed = false;
+                if (!passed && applyAutoFixes && check.HasFix) {
+                    check.Fix();
+                    passed = check.Test();
+                    autoFixed = true;
+                }
+                return new Result()
+                {
+                    check = check,
+                    passed = passed,
+                    autoFixed = autoFixed
+                };
+            });
         }
     }
 
