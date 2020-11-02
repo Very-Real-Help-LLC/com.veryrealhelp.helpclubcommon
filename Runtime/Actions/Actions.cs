@@ -7,8 +7,10 @@ namespace VeryRealHelp.HelpClubCommon.Actions
     [Flags]
     public enum ActionType
     {
-        Activate = 1,
-        Destroy = 2
+        Activate = 1 << 0,
+        Destroy = 1 << 1,
+        Modify = 1 << 2,
+        Everything = 1 << 3
     }
 
     public interface IActionHandler
@@ -36,5 +38,10 @@ namespace VeryRealHelp.HelpClubCommon.Actions
         public override ActionType ActionTypeMask => ActionType.Activate;
 
         public UnityEvent onActivate;
-     }
+    }
+
+    public class ModifyHandlerConfig : HandlerConfig
+    {
+        public override ActionType ActionTypeMask => ActionType.Modify;
+    }
 }
