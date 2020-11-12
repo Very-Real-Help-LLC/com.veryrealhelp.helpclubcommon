@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using VeryRealHelp.HelpClubCommon.World;
 using Unity.EditorCoroutines.Editor;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace VeryRealHelp.HelpClubCommon.Editor
 {
@@ -31,10 +33,16 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             return EditorCoroutineUtility.StartCoroutineOwnerless(PrepareAllForBuildCoroutine());
         }
 
-        private static IEnumerator PrepareAllForBuildCoroutine()
+        public static IEnumerable<WorldInfo> GetAllWorldInfos()
         {
             foreach (var guid in AssetDatabase.FindAssets("t:WorldInfo"))
-                yield return PrepareForBuildCoroutine(AssetDatabase.LoadAssetAtPath<WorldInfo>(AssetDatabase.GUIDToAssetPath(guid)));
+                yield return AssetDatabase.LoadAssetAtPath<WorldInfo>(AssetDatabase.GUIDToAssetPath(guid));
+        }
+
+        private static IEnumerator PrepareAllForBuildCoroutine()
+        {
+            foreach (var worldInfo in GetAllWorldInfos())
+                yield return PrepareForBuildCoroutine(worldInfo);
         }
 
         private static IEnumerator PrepareForBuildCoroutine(WorldInfo worldInfo)
