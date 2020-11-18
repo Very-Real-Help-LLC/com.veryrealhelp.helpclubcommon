@@ -16,6 +16,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             BuildBundlesAndroid();
             BuildBundlesStandaloneWindows();
             BuildBundlesStandaloneOSX();
+            BuildBundlesIOS();
         }
 
         public static IEnumerator BuildWorldBundlesCoroutine()
@@ -25,6 +26,8 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             BuildBundlesStandaloneWindows();
             yield return null;
             BuildBundlesStandaloneOSX();
+            yield return null;
+            BuildBundlesIOS();
             yield return null;
         }
         
@@ -58,6 +61,17 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             Debug.Log("Finished Building Standalone OSX Bundles");
         }
 
+        [MenuItem("VRH/Bundles/Build IOS Bundles")]
+        public static void BuildBundlesIOS()
+        {
+#if UNITY_EDITOR_OSX
+            Debug.Log("Building IOS Bundles...");
+            string directory = "AssetBundles/IOS";
+            Directory.CreateDirectory(directory);
+            BuildPipeline.BuildAssetBundles(directory, bundleOptions, BuildTarget.iOS);
+            Debug.Log("Finished Building IOS Bundles");
+#endif
+        }
     }
 
 }
