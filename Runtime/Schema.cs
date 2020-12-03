@@ -61,4 +61,12 @@ namespace VeryRealHelp.HelpClubCommon.Schema
     {
         public WorldDefinition[] worlds;
     }
+
+    [Serializable]
+    public class ProjectManifest
+    {
+        public bool isAWorldProject;
+        public WorldDefinition world;
+        public BundleSetDefinition bundles;
+    }
 }

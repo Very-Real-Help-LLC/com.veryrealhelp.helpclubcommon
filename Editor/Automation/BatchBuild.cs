@@ -17,6 +17,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             public string buildRoot;
             public string buildName;
             public string version;
+            public string uriRoot;
             public HashSet<BuildTarget> targets;
 
             public BuildConfig(Args args)
@@ -24,6 +25,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                 buildRoot = args.Get("buildRoot", "Build");
                 buildName = args.Get("buildName", Application.productName);
                 version = args.Get("buildVersion", Application.version);
+                uriRoot = args.Get("uriRoot", "");
                 targets = new HashSet<BuildTarget>();
                 if (args.ContainsKey("android"))
                     targets.Add(BuildTarget.Android);
@@ -119,27 +121,37 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             AssetBundle.UnloadAllAssetBundles(true);
 
             Debug.Log("Validating Project...");
+            WorldDefinition worldDefinition = null;
             var worldInfos = WorldInfoEditor.GetAllWorldInfos().ToList();
             if (worldInfos.Count == 0)
             {
-                Error("No WorldInfo assets found");
-                return;
+                Debug.Log("No WorldInfo assets found");
             }
             else if (worldInfos.Count > 1)
             {
                 Error("More than one WorldInfo assets exists in project. This is a limitation of our current bundle distribution system.");
                 return;
             }
-            Debug.Log("WORLD INFOS: " + string.Join(" ", worldInfos));
-            var worldInfo = worldInfos.First();
-            var worldInfoPath = AssetDatabase.GetAssetPath(worldInfo);
-            var worldInfoBundle = AssetDatabase.GetImplicitAssetBundleName(worldInfoPath);
-            Debug.Log($"SELECTED: {worldInfo} at {worldInfoPath} from {worldInfoBundle}");
-
-            WorldInfoEditor.PrepareAllForBuildSynchronously();
-            if (!WorldValidator.ValidateAll())
+            else
             {
-                Error("Failed to Validate WorldInfo");
+                Debug.Log("WORLD INFOS: " + string.Join(" ", worldInfos));
+                var worldInfo = worldInfos.First();
+                var worldInfoPath = AssetDatabase.GetAssetPath(worldInfo);
+                var worldInfoBundle = AssetDatabase.GetImplicitAssetBundleName(worldInfoPath);
+                worldDefinition = new WorldDefinition
+                {
+                    name = Application.productName,
+                    version = Application.version,
+                    infoAsset = worldInfoPath,
+                    infoBundle = worldInfoBundle
+                };
+                Debug.Log($"SELECTED: {worldInfo} at {worldInfoPath} from {worldInfoBundle}");
+
+                WorldInfoEditor.PrepareAllForBuildSynchronously();
+                if (!WorldValidator.ValidateAll())
+                {
+                    Error("Failed to Validate WorldInfo");
+                }
             }
 
             Debug.Log("Building Project...");
@@ -160,19 +172,27 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             var manifestJson = $"{config.BuildPath}/manifest.json";
             using (StreamWriter file = new StreamWriter(manifestJson))
             {
-                file.Write(JsonUtility.ToJson(new WorldDefinition
+                var bundleSet = new BundleSetDefinition
                 {
-                    name = Application.productName,
-                    version = Application.version,
-                    infoAsset = worldInfoPath,
-                    infoBundle = worldInfoBundle,
-                    bundles = new BundleSetDefinition
-                    {
-                        androidPath = config.GetManifestPath(BuildTarget.Android),
-                        osxPath = config.GetManifestPath(BuildTarget.StandaloneOSX),
-                        windowsPath = config.GetManifestPath(BuildTarget.StandaloneWindows),
-                        bundlePaths = manifest.GetAllAssetBundles()
-                    }
+                    uriRoot = config.uriRoot,
+                    androidPath = config.GetManifestPath(BuildTarget.Android),
+                    osxPath = config.GetManifestPath(BuildTarget.StandaloneOSX),
+                    windowsPath = config.GetManifestPath(BuildTarget.StandaloneWindows),
+                    bundlePaths = manifest.GetAllAssetBundles()
+                };
+                BundleSetDefinition bundlesForManifest = null;
+                if (worldDefinition == null)
+                {
+                    bundlesForManifest = bundleSet;
+                }
+                else
+                {
+                    worldDefinition.bundles = bundleSet;
+                }
+                file.Write(JsonUtility.ToJson(new ProjectManifest {
+                    isAWorldProject = worldDefinition != null,
+                    world = worldDefinition,
+                    bundles = bundlesForManifest
                 }));
             }
 
