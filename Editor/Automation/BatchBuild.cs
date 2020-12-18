@@ -109,7 +109,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             ParseCommandLineArguments(out var args);
             BuildConfig config = new BuildConfig(args);
 
-            if (Application.isEditor)
+            if (Application.isEditor && !Application.isBatchMode)
             {
                 bool confirmed = EditorUtility.DisplayDialog($"Create build {config.buildName}?", $"This will replace the contents of\n{Path.GetFullPath(config.buildRoot)}", "Continue");
                 if (!confirmed)
