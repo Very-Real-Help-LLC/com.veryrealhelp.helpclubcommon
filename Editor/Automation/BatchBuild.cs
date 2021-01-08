@@ -1,19 +1,64 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using VeryRealHelp.HelpClubCommon.Schema;
+using VeryRealHelp.HelpClubCommon.World;
 
 namespace VeryRealHelp.HelpClubCommon.Editor.Automation
 {
     static class BatchBuild
     {
-        private static string EOL = Environment.NewLine;
-
-        private static void ParseCommandLineArguments(out Dictionary<string, string> providedArguments)
+        private class BuildConfig
         {
-            providedArguments = new Dictionary<string, string>();
+            public string buildRoot;
+            public string buildName;
+            public string version;
+            public string uriRoot;
+            public HashSet<BuildTarget> targets;
+
+            public BuildConfig(Args args)
+            {
+                buildRoot = args.Get("buildRoot", "Build");
+                buildName = args.Get("buildName", Application.productName);
+                version = args.Get("buildVersion", Application.version);
+                uriRoot = args.Get("uriRoot", "");
+                targets = new HashSet<BuildTarget>();
+                if (args.ContainsKey("android"))
+                    targets.Add(BuildTarget.Android);
+                if (args.ContainsKey("osx"))
+                    targets.Add(BuildTarget.StandaloneOSX);
+                if (args.ContainsKey("win"))
+                    targets.Add(BuildTarget.StandaloneWindows);
+                if (targets.Count == 0)  // if no targets specified, target all
+                    targets = new HashSet<BuildTarget> { BuildTarget.Android, BuildTarget.StandaloneOSX, BuildTarget.StandaloneWindows };
+            }
+
+            public string BuildPath => $"{buildRoot}/{buildName}";
+
+            public string GetBuildPath(BuildTarget target) => $"{BuildPath}/{target}";
+            public string GetManifestPath(BuildTarget target) => $"{buildName}/{target}/{target}";
+        }
+
+        private class Args : Dictionary<string, string> {
+            public string Get(string key, string defaultValue = null)
+            {
+                TryGetValue(key, out string value);
+                if (value == null)
+                    return defaultValue;
+                else
+                    return value;
+            }
+        }
+
+        private static readonly string EOL = Environment.NewLine;
+
+        private static void ParseCommandLineArguments(out Args providedArguments)
+        {
+            providedArguments = new Args();
             string[] args = Environment.GetCommandLineArgs();
 
             Console.WriteLine(
@@ -42,169 +87,126 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             }
         }
 
-        private static Dictionary<string, string> GetValidatedOptions()
+        private static void Error(string message)
         {
-            ParseCommandLineArguments(out var validatedOptions);
-
-            if (!validatedOptions.TryGetValue("projectPath", out var projectPath))
+            if (Application.isBatchMode)
             {
-                Console.WriteLine("Missing argument -projectPath");
-                EditorApplication.Exit(110);
+                Console.WriteLine(message);
+                ExitWithResult(BuildResult.Failed);
             }
-
-            if (!validatedOptions.TryGetValue("buildTarget", out var buildTarget))
-            {
-                Console.WriteLine("Missing argument -buildTarget");
-                EditorApplication.Exit(120);
-            }
-
-            if (!Enum.IsDefined(typeof(BuildTarget), buildTarget))
-            {
-                EditorApplication.Exit(121);
-            }
-
-            if (!validatedOptions.TryGetValue("customBuildPath", out var customBuildPath))
-            {
-                Console.WriteLine("Missing argument -customBuildPath");
-                EditorApplication.Exit(130);
-            }
-
-            string defaultCustomBuildName = "TestBuild";
-            if (!validatedOptions.TryGetValue("customBuildName", out var customBuildName))
-            {
-                Console.WriteLine($"Missing argument -customBuildName, defaulting to {defaultCustomBuildName}.");
-                validatedOptions.Add("customBuildName", defaultCustomBuildName);
-            }
-            else if (customBuildName == "")
-            {
-                Console.WriteLine($"Invalid argument -customBuildName, defaulting to {defaultCustomBuildName}.");
-                validatedOptions.Add("customBuildName", defaultCustomBuildName);
-            }
-
-            return validatedOptions;
+            else
+                throw new Exception(message);
         }
 
-
-        [MenuItem("Test/BuildProject")]
+        [MenuItem("VRH/Automation/Run Build Automation")]
         public static void Build()
         {
             if (Application.isBatchMode)
-                Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-            Debug.Log("Building Project...");
-            WorldInfoEditor.PrepareAllForBuildSynchronously();
-            if (!WorldValidator.ValidateAll())
-                if (Application.isBatchMode)
-                    ExitWithResult(BuildResult.Failed);
-                else
-                    throw new Exception("Validation Failed");
-
-
-            ParseCommandLineArguments(out var validatedOptions);
-
-            //Build for all if no specific tags provided
-            if(!validatedOptions.ContainsKey("android") && !validatedOptions.ContainsKey("win") && !validatedOptions.ContainsKey("osx"))
             {
-                DoBuild(BuildTarget.Android);
-                DoBuild(BuildTarget.StandaloneWindows);
-                DoBuild(BuildTarget.StandaloneOSX);
+                Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+            }
+
+            ParseCommandLineArguments(out var args);
+            BuildConfig config = new BuildConfig(args);
+
+            if (Application.isEditor && !Application.isBatchMode)
+            {
+                bool confirmed = EditorUtility.DisplayDialog($"Create build {config.buildName}?", $"This will replace the contents of\n{Path.GetFullPath(config.buildRoot)}", "Continue");
+                if (!confirmed)
+                {
+                    return;
+                }
+            }
+
+            AssetBundle.UnloadAllAssetBundles(true);
+
+            Debug.Log("Validating Project...");
+            WorldDefinition worldDefinition = null;
+            var worldInfos = WorldInfoEditor.GetAllWorldInfos().ToList();
+            if (worldInfos.Count == 0)
+            {
+                Debug.Log("No WorldInfo assets found");
+            }
+            else if (worldInfos.Count > 1)
+            {
+                Error("More than one WorldInfo assets exists in project. This is a limitation of our current bundle distribution system.");
+                return;
             }
             else
             {
-                if(validatedOptions.ContainsKey("android"))
+                Debug.Log("WORLD INFOS: " + string.Join(" ", worldInfos));
+                var worldInfo = worldInfos.First();
+                var worldInfoPath = AssetDatabase.GetAssetPath(worldInfo);
+                var worldInfoBundle = AssetDatabase.GetImplicitAssetBundleName(worldInfoPath);
+                worldDefinition = new WorldDefinition
                 {
-                    DoBuild(BuildTarget.Android);
-                }
-                if (validatedOptions.ContainsKey("win"))
+                    name = Application.productName,
+                    version = Application.version,
+                    infoAsset = worldInfoPath,
+                    infoBundle = worldInfoBundle
+                };
+                Debug.Log($"SELECTED: {worldInfo} at {worldInfoPath} from {worldInfoBundle}");
+
+                WorldInfoEditor.PrepareAllForBuildSynchronously();
+                if (!WorldValidator.ValidateAll())
                 {
-                    DoBuild(BuildTarget.StandaloneWindows);
-                }
-                if (validatedOptions.ContainsKey("osx"))
-                {
-                    DoBuild(BuildTarget.StandaloneOSX);
+                    Error("Failed to Validate WorldInfo");
                 }
             }
 
+            Debug.Log("Building Project...");
+            if (Directory.Exists(config.buildRoot))
+            {
+                Directory.Delete(config.buildRoot, recursive: true);
+            }
+            Directory.CreateDirectory(config.buildRoot);
+            foreach (var target in config.targets)
+            {
+                DoBuild(config, target);
+            }
+
+            Debug.Log("Building Manifest...");
+            var manifestBundlePath = config.buildRoot + "/" + config.GetManifestPath(config.targets.First());
+            var manifestBundle = AssetBundle.LoadFromFile(manifestBundlePath);
+            var manifest = manifestBundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+            var manifestJson = $"{config.BuildPath}/manifest.json";
+            using (StreamWriter file = new StreamWriter(manifestJson))
+            {
+                var bundleSet = new BundleSetDefinition
+                {
+                    uriRoot = config.uriRoot,
+                    androidPath = config.GetManifestPath(BuildTarget.Android),
+                    osxPath = config.GetManifestPath(BuildTarget.StandaloneOSX),
+                    windowsPath = config.GetManifestPath(BuildTarget.StandaloneWindows),
+                    bundlePaths = manifest.GetAllAssetBundles()
+                };
+                BundleSetDefinition bundlesForManifest = null;
+                if (worldDefinition == null)
+                {
+                    bundlesForManifest = bundleSet;
+                }
+                else
+                {
+                    worldDefinition.bundles = bundleSet;
+                }
+                file.Write(JsonUtility.ToJson(new ProjectManifest {
+                    isAWorldProject = worldDefinition != null,
+                    world = worldDefinition,
+                    bundles = bundlesForManifest
+                }));
+            }
+
+            Debug.Log($"Build Completed for {config.buildName} version {config.version} at {config.BuildPath}");
             if (Application.isBatchMode)
                 ExitWithResult(BuildResult.Succeeded);
         }
 
-
-        public static void DoBuild(BuildTarget buildTarg)
+        private static void DoBuild(BuildConfig config, BuildTarget buildTarget)
         {
-
-            string directory = "BuildTest/" + buildTarg.ToString();
-            //string directory = "AssetBundles/" + buildOptions.target.ToString();
-            Directory.CreateDirectory(directory);
+            string path = config.GetBuildPath(buildTarget);
+            Directory.CreateDirectory(path);
             BuildAssetBundleOptions bundleOptions = BuildAssetBundleOptions.ForceRebuildAssetBundle & BuildAssetBundleOptions.StrictMode & BuildAssetBundleOptions.ChunkBasedCompression;
-            BuildPipeline.BuildAssetBundles(directory, bundleOptions, buildTarg);
-
-        }
-
-        [MenuItem("Test/BuildProjectOld")]
-        public static void BuildProjectOld()
-        {
-            // Gather values from args
-            var options = GetValidatedOptions();
-
-            /*
-            var options = new Dictionary<string, string>();
-            //options.Add("projectPath", "C:/Users/Callum/Desktop/unity-builder/action/default-build-script");
-            options.Add("buildTarget", "StandaloneWindows");
-            //options.Add("customBuildPath", "C:/Users/Callum/Desktop/unity-builder/action/default-build-script/StandaloneWindows/StandaloneWindows.exe");
-            //options.Add("customBuildName", "TestBuild");
-            */
-
-            // Gather values from project
-            //var scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
-
-            // Define BuildPlayer Options
-            var buildOptions = new BuildPlayerOptions
-            {
-                //scenes = scenes,
-                //locationPathName = options["customBuildPath"],
-                target = (BuildTarget)Enum.Parse(typeof(BuildTarget), options["buildTarget"]),
-            };
-
-            //string directory = "AssetBundles/StandaloneWindows";
-
-            string directory = "AssetBundles/" + buildOptions.target.ToString();
-            Directory.CreateDirectory(directory);
-
-            BuildAssetBundleOptions bundleOptions = BuildAssetBundleOptions.ForceRebuildAssetBundle & BuildAssetBundleOptions.StrictMode & BuildAssetBundleOptions.ChunkBasedCompression;
-
-            //Perform bundle build
-            BuildPipeline.BuildAssetBundles(directory, bundleOptions, BuildTarget.StandaloneWindows);
-
-            /*
-            // Perform build
-            BuildReport buildReport = BuildPipeline.BuildPlayer(buildOptions);
-
-            // Summary
-            BuildSummary summary = buildReport.summary;
-            ReportSummary(summary);
-
-            // Result
-            BuildResult result = summary.result;
-            */
-
-            ExitWithResult(BuildResult.Succeeded);
-            //ExitWithResult(result);
-        }
-
-        private static void ReportSummary(BuildSummary summary)
-        {
-            Console.WriteLine(
-              $"{EOL}" +
-              $"###########################{EOL}" +
-              $"#      Build results!      #{EOL}" +
-              $"###########################{EOL}" +
-              $"{EOL}" +
-              $"Duration: {summary.totalTime.ToString()}{EOL}" +
-              $"Warnings: {summary.totalWarnings.ToString()}{EOL}" +
-              $"Errors: {summary.totalErrors.ToString()}{EOL}" +
-              $"Size: {summary.totalSize.ToString()} bytes{EOL}" +
-              $"{EOL}"
-            );
+            BuildPipeline.BuildAssetBundles(path, bundleOptions, buildTarget);
         }
 
         private static void ExitWithResult(BuildResult result)
