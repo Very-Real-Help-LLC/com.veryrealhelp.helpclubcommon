@@ -39,7 +39,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                     targets.Add(BuildTarget.iOS);
 
                  if (targets.Count == 0)  // if no targets specified, target all
-                    targets = new HashSet<BuildTarget> { BuildTarget.Android, BuildTarget.StandaloneOSX, BuildTarget.StandaloneWindows, BuildTarget.iOS };
+                    targets = new HashSet<BuildTarget> { BuildTarget.iOS };
 #else
 
                 if (targets.Count == 0)  // if no targets specified, target all
