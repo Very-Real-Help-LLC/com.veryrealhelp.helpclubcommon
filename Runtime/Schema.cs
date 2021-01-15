@@ -11,6 +11,7 @@ namespace VeryRealHelp.HelpClubCommon.Schema
         public string androidPath;
         public string osxPath;
         public string windowsPath;
+        public string iosPath;
         public string[] bundlePaths;
 
         public string Path
@@ -24,6 +25,8 @@ namespace VeryRealHelp.HelpClubCommon.Schema
                         return osxPath;
                     case RuntimePlatform.Android:
                         return androidPath;
+                    case RuntimePlatform.IPhonePlayer:
+                        return iosPath;
                     case RuntimePlatform.WindowsPlayer:
                     case RuntimePlatform.WindowsEditor:
                     default:

@@ -188,6 +188,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                     androidPath = config.GetManifestPath(BuildTarget.Android),
                     osxPath = config.GetManifestPath(BuildTarget.StandaloneOSX),
                     windowsPath = config.GetManifestPath(BuildTarget.StandaloneWindows),
+                    iosPath = config.GetManifestPath(BuildTarget.iOS),
                     bundlePaths = manifest.GetAllAssetBundles()
                 };
                 BundleSetDefinition bundlesForManifest = null;
