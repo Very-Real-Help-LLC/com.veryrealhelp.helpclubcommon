@@ -33,8 +33,18 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                     targets.Add(BuildTarget.StandaloneOSX);
                 if (args.ContainsKey("win"))
                     targets.Add(BuildTarget.StandaloneWindows);
+
+#if UNITY_EDITOR_OSX
+                 if (args.ContainsKey("ios"))
+                    targets.Add(BuildTarget.iOS);
+
+                 if (targets.Count == 0)  // if no targets specified, target all
+                    targets = new HashSet<BuildTarget> { BuildTarget.iOS };
+#else
+
                 if (targets.Count == 0)  // if no targets specified, target all
                     targets = new HashSet<BuildTarget> { BuildTarget.Android, BuildTarget.StandaloneOSX, BuildTarget.StandaloneWindows };
+#endif
             }
 
             public string BuildPath => $"{buildRoot}/{buildName}";
@@ -178,6 +188,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                     androidPath = config.GetManifestPath(BuildTarget.Android),
                     osxPath = config.GetManifestPath(BuildTarget.StandaloneOSX),
                     windowsPath = config.GetManifestPath(BuildTarget.StandaloneWindows),
+                    iosPath = config.GetManifestPath(BuildTarget.iOS),
                     bundlePaths = manifest.GetAllAssetBundles()
                 };
                 BundleSetDefinition bundlesForManifest = null;
