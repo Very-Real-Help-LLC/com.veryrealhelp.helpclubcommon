@@ -6,9 +6,39 @@ on:
 
 
 jobs:
-  build:    
-    name: Build0
-    runs-on: self-hosted
+  job1:    
+    name: Build iOS Bundles
+    runs-on: [self-hosted, macOS]
+    strategy:
+      fail-fast: true
+      matrix:
+        projectPath: 
+          - .
+        targetPlatform:
+          - StandaloneWindows
+    env:
+      ACTION_LOG_FILE: "${{ github.run_id }}_${{ github.run_number }}.log"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run jobRunnerPowershell script
+        run: .\runner_job.ps1
+        shell: pwsh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: "unity_build.log"
+          path: ${{ env.ACTION_LOG_FILE }}
+      - uses: rennat/upload-s3-action@master
+        with:
+          AWS_S3_BUCKET: 'vrh-test'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-east-1'
+          SOURCE_DIR: 'Build'
+          DEST_DIR: '/HelpClubWorldBundles/${{ github.repository }}/${{ github.ref }}/'
+
+  job2: 
+    name: Build Other Bundles 
+    runs-on: [self-hosted, windows]
     strategy:
       fail-fast: true
       matrix:
