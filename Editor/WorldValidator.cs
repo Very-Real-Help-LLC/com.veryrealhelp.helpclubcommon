@@ -33,7 +33,8 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             var collections = new CheckCollection[]
             {
                 settingsChecks,
-                sceneRequirementChecks
+                sceneRequirementChecks,
+                worldInfoChecks,
             };
             uint count = 0;
             uint failures = 0;
@@ -157,6 +158,106 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                     .ToList()
                     .ForEach(x => x.gameObject.AddComponent<Audio.AudioSourceSettings>())
             )
+        );
+
+        public static readonly CheckCollection worldInfoChecks = new CheckCollection(
+            () => AssetDatabase.FindAssets("t:WorldInfo")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<WorldInfo>)
+                .SelectMany(worldInfo => new CheckCollection.Check[]
+                {
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Should have a Scene",
+                        () => worldInfo.sceneAsset != null
+                    ),
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Should have a portal label",
+                        () => !string.IsNullOrWhiteSpace(worldInfo.portalLabel)
+                    ),
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Should have a portal texture",
+                        () => worldInfo.portalTexture != null
+                    ),
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Should have a preview texture",
+                        () => {
+                            var passing = worldInfo.previewTexture != null;
+                            if (!passing)
+                            {
+                                Debug.LogError("WorldInfo Should have a preview texture", worldInfo);
+                            }
+                            return passing;
+                        }
+                    ),
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Preview Texture should be at least 512x512",
+                        () => {
+                            var exists = worldInfo.previewTexture != null;
+                            var passing = exists && worldInfo.previewTexture.width >= 512 && worldInfo.previewTexture.height >= 512;
+                            if (exists && !passing)
+                            {
+                                Debug.LogError("Preview Texture needs to be at least 512x512", worldInfo.previewTexture);
+                            }
+                            return passing;
+                        }
+                    ),
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Preview Texture should have mipmaps enabled",
+                        () => worldInfo.previewTexture != null && worldInfo.previewTexture.mipmapCount > 1,
+                        () => {
+                            var path = AssetDatabase.GetAssetPath(worldInfo.previewTexture);
+                            TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(path);
+                            importer.mipmapEnabled = true;
+                            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+                        }
+                    ),
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Bundles should have a Render Settings File",
+                        () => {
+                            var sceneAssetName = AssetDatabase.GetAssetPath(worldInfo.sceneAsset);
+                            var sceneBundleName = AssetDatabase.GetImplicitAssetBundleName(sceneAssetName);
+                            var bundleNames = AssetDatabase.GetAssetBundleDependencies(sceneBundleName, true);
+                            return AssetDatabase.FindAssets("t:RenderSettingsFile")
+                                .Select(AssetDatabase.GUIDToAssetPath)
+                                .Select(AssetDatabase.GetImplicitAssetBundleName)
+                                .Any(renderSettingsBundleName => bundleNames.Contains(renderSettingsBundleName));
+                        }
+                    ),
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Portal Texture should be in the same bundle as WorldInfo",
+                        () => {
+                            var exists = worldInfo.portalTexture != null;
+                            if (!exists) return false;
+                            var worldInfoBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo));
+                            var portalTextureBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo.portalTexture));
+                            return worldInfoBundleName == portalTextureBundleName;
+                        },
+                        () =>
+                        {
+                            var exists = worldInfo.portalTexture != null;
+                            if (!exists) return;
+                            var worldInfoBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo));
+                            AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(worldInfo.portalTexture)).SetAssetBundleNameAndVariant(worldInfoBundleName, "");
+                        }
+                    ),
+                    new CheckCollection.Check(
+                        $"WorldInfo: {worldInfo.name}", "Preview Texture should be in the same bundle as WorldInfo",
+                        () => {
+                            var exists = worldInfo.previewTexture != null;
+                            if (!exists) return false;
+                            var worldInfoBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo));
+                            var previewTextureBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo.previewTexture));
+                            return worldInfoBundleName == previewTextureBundleName;
+                        },
+                        () =>
+                        {
+                            var exists = worldInfo.previewTexture != null;
+                            if (!exists) return;
+                            var worldInfoBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo));
+                            AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(worldInfo.previewTexture)).SetAssetBundleNameAndVariant(worldInfoBundleName, "");
+                        }
+                    ),
+                })
         );
 
         #endregion

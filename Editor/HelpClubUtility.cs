@@ -206,50 +206,18 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             )
         );
 
-        public static readonly CheckCollection worldInfoChecks = new CheckCollection(
-            () => AssetDatabase.FindAssets("t:WorldInfo")
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(AssetDatabase.LoadAssetAtPath<WorldInfo>)
-                .SelectMany(worldInfo => new CheckCollection.Check[]
-                {
-                    new CheckCollection.Check(
-                        $"WorldInfo: {worldInfo.name}", "Should have a Scene",
-                        () => worldInfo.sceneAsset != null
-                    ),
-                    new CheckCollection.Check(
-                        $"WorldInfo: {worldInfo.name}", "Should have a portal label",
-                        () => !string.IsNullOrWhiteSpace(worldInfo.portalLabel)
-                    ),
-                    new CheckCollection.Check(
-                        $"WorldInfo: {worldInfo.name}", "Should have a portal texture",
-                        () => worldInfo.portalTexture != null
-                    ),
-                    new CheckCollection.Check(
-                        $"WorldInfo: {worldInfo.name}", "Bundles should have a Render Settings File",
-                        () => {
-                            var sceneAssetName = AssetDatabase.GetAssetPath(worldInfo.sceneAsset);
-                            var sceneBundleName = AssetDatabase.GetImplicitAssetBundleName(sceneAssetName);
-                            var bundleNames = AssetDatabase.GetAssetBundleDependencies(sceneBundleName, true);
-                            return AssetDatabase.FindAssets("t:RenderSettingsFile")
-                                .Select(AssetDatabase.GUIDToAssetPath)
-                                .Select(AssetDatabase.GetImplicitAssetBundleName)
-                                .Any(renderSettingsBundleName => bundleNames.Contains(renderSettingsBundleName));
-                        }
-                    ),
-                })
-        );
-
         private readonly List<CheckSet> checkSets = new List<CheckSet>()
         {
             new CheckSet() { label = "Project Settings", checks = WorldValidator.settingsChecks, autoFix = true },
             new CheckSet() { label = "Scene Requirements", checks = WorldValidator.sceneRequirementChecks, autoFix = false },
             new CheckSet() { label = "Scene Suggestions", checks = sceneSuggestions, autoFix = false, severity = CheckSet.Severity.Suggestion },
-            new CheckSet() { label = "World Info Files", checks = worldInfoChecks, autoFix = false},
+            new CheckSet() { label = "World Info Files", checks = WorldValidator.worldInfoChecks, autoFix = false},
             //new CheckSet() { label = "Assets", checks = assetChecks, autoFix = false, severity = CheckSet.Severity.Suggestion },
         };
 
         private void RunChecks()
         {
+            Debug.Log("### ------- Running Checks ------- ###");
             checkSets.ForEach(x => x.Run());
         }
 

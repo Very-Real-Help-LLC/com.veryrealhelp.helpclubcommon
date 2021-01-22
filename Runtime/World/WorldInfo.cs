@@ -21,6 +21,7 @@ namespace VeryRealHelp.HelpClubCommon.World
         #endif
         public string portalLabel;
         public Texture portalTexture;
+        public Texture2D previewTexture;
 
         [Header("Voice")]
         public float voiceProximityRange;
