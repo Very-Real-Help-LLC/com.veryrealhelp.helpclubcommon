@@ -10,7 +10,8 @@ namespace VeryRealHelp.HelpClubCommon.Actions
         Activate = 1 << 0,
         Destroy = 1 << 1,
         Modify = 1 << 2,
-        Everything = 1 << 3
+        LockToggle = 1 << 3,
+        Everything = 1 << 4
     }
 
     public interface IActionHandler
@@ -43,5 +44,9 @@ namespace VeryRealHelp.HelpClubCommon.Actions
     public class ModifyHandlerConfig : HandlerConfig
     {
         public override ActionType ActionTypeMask => ActionType.Modify;
+    }
+    public class LockToggleHandlerConfig : HandlerConfig
+    {
+        public override ActionType ActionTypeMask => ActionType.LockToggle;
     }
 }
