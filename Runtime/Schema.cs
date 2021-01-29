@@ -57,6 +57,7 @@ namespace VeryRealHelp.HelpClubCommon.Schema
         public string infoBundle;
         public string infoAsset;
         public BundleSetDefinition bundles;
+        public int defaultUserLimit;
     }
 
     [Serializable]
