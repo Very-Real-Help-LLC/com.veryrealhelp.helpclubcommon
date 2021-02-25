@@ -10,6 +10,8 @@ namespace VeryRealHelp.HelpClubCommon.Editor
 {
     public static class WorldValidator
     {
+        public static readonly string[] VALID_MODEL_EXTENSIONS = { "fbs", "dae", "3ds", "dxf", "obj" };
+
         [MenuItem("VRH/Worlds/Validate All Worlds")]
         public static bool ValidateAll()
         {
@@ -157,6 +159,30 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                     .Where(x => x.GetComponent<Audio.AudioSourceSettings>() == null)
                     .ToList()
                     .ForEach(x => x.gameObject.AddComponent<Audio.AudioSourceSettings>())
+            ),
+            new CheckCollection.Check(
+                "Model Formats", "All models must be natively supported by Unity: .fbx, .dae (Collada), .3ds, .dxf, or .obj",
+                () => UnityEngine.Object.FindObjectsOfType<MeshCollider>().Select(x => x.sharedMesh)
+                    .Union(
+                        UnityEngine.Object.FindObjectsOfType<MeshFilter>().Select(x => x.sharedMesh)
+                    )
+                    .All(x =>
+                    {
+                        var path = AssetDatabase.GetAssetPath(x);
+                        bool valid = true;
+                        var parts = path.Split('.');
+                        valid = parts.Count() > 1;
+                        if (valid)
+                        {
+                            valid = VALID_MODEL_EXTENSIONS.Contains(parts[parts.Length - 1]);
+                        }
+                        if (!valid)
+                        {
+                            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                            Debug.LogError($"Invalid Model Format used: {x}", asset);
+                        }
+                        return valid;
+                    })
             )
         );
 
