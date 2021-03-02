@@ -12,7 +12,9 @@ namespace VeryRealHelp.HelpClubCommon.Prop
             UsableTest = 3,
             TextProp = 4,
             HelperProp = 5,
-            TextHelperProp = 6
+            TextHelperProp = 6,
+            DeckProp = 7,
+            CardProp = 8
         }
         public enum PropFollowType
         {
@@ -25,11 +27,13 @@ namespace VeryRealHelp.HelpClubCommon.Prop
             HelperOnly = 2,
             SMART = 3,
             DBT = 4,
-            CBT = 5
+            CBT = 5,
+            Cards = 6
         }
         public PropType Type;
         public PropFollowType FollowType;
         public PropCategory Category;
         public GameObject Prefab;
+        public CardDefinition CardSet;
     }
 }
