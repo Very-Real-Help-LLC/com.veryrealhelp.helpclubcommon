@@ -30,9 +30,15 @@ namespace VeryRealHelp.HelpClubCommon.Prop
             CBT = 5,
             Cards = 6
         }
+        public enum PropPhysicsType
+        {
+            Floating = 1,
+            PhysicsEnabled = 2
+        }
         public PropType Type;
         public PropFollowType FollowType;
         public PropCategory Category;
+        public PropPhysicsType PhysicsType;
         public GameObject Prefab;
         public CardDefinition CardSet;
     }
