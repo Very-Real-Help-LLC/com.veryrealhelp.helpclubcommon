@@ -10,7 +10,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
 {
     public static class WorldValidator
     {
-        public static readonly string[] VALID_MODEL_EXTENSIONS = { "fbs", "dae", "3ds", "dxf", "obj" };
+        public static readonly string[] VALID_MODEL_EXTENSIONS = { "fbx", "dae", "3ds", "dxf", "obj" };
 
         [MenuItem("VRH/Worlds/Validate All Worlds")]
         public static bool ValidateAll()
@@ -170,16 +170,21 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                     {
                         var path = AssetDatabase.GetAssetPath(x);
                         bool valid = true;
+                        if (path.StartsWith("Library/unity default resources"))
+                        {
+                            return true;
+                        }
                         var parts = path.Split('.');
                         valid = parts.Count() > 1;
                         if (valid)
                         {
-                            valid = VALID_MODEL_EXTENSIONS.Contains(parts[parts.Length - 1]);
+                            var extension = parts[parts.Length - 1].ToLower();
+                            valid = VALID_MODEL_EXTENSIONS.Contains(extension);
                         }
                         if (!valid)
                         {
                             var asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                            Debug.LogError($"Invalid Model Format used: {x}", asset);
+                            Debug.LogError($"Invalid Model Format used: {x} ({path})", asset);
                         }
                         return valid;
                     })
