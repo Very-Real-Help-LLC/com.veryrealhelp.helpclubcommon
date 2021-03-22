@@ -166,6 +166,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                     .Union(
                         UnityEngine.Object.FindObjectsOfType<MeshFilter>().Select(x => x.sharedMesh)
                     )
+                    .Where(x => x != null)
                     .All(x =>
                     {
                         var path = AssetDatabase.GetAssetPath(x);
