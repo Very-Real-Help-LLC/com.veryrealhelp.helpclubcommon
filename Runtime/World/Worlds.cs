@@ -30,7 +30,12 @@ namespace VeryRealHelp.HelpClubCommon.World
         FractalWorld4 = 19,
         FractalWorld5 = 20,
         Halloween2020 = 21,
-        WinterWorld = 22
+        WinterWorld = 22,
+        Spring World = 23,
+        Game Room = 24,
+        Endgame = 25,
+        Home = 26,
+        Dev = 27
     }
 
 }
