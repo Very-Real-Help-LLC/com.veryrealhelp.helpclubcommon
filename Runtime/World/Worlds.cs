@@ -35,7 +35,8 @@ namespace VeryRealHelp.HelpClubCommon.World
         Game Room = 24,
         Endgame = 25,
         Home = 26,
-        Dev = 27
+        Dev = 27,
+        Dev = 28
     }
 
 }
