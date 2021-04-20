@@ -36,7 +36,7 @@ namespace VeryRealHelp.HelpClubCommon.World
         Endgame = 25,
         Home = 26,
         Dev = 27,
-        Dev = 28
+        Aquarium = 28
     }
 
 }
