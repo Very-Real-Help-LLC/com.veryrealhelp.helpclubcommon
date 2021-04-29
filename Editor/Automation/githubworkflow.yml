@@ -38,7 +38,7 @@ jobs:
 
   job2: 
     name: Build Other Bundles 
-    runs-on: [self-hosted, windows]
+    runs-on: [self-hosted, windows, bundles]
     strategy:
       fail-fast: true
       matrix:
