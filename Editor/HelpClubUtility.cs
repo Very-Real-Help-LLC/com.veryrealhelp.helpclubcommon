@@ -181,6 +181,19 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                         Debug.LogWarning($"Scene contains a total of {triangleCount} triangles which is over the budget of {TRIANGLE_LIMIT}");
                     return passing;
                 }
+            ),
+            new CheckCollection.Check(
+                "Mesh Colliders", "Should not use non-convex mesh colliders",
+                () =>
+                {
+                    var offenders = UnityEngine.SceneManagement.SceneManager.GetActiveScene()
+                        .GetRootGameObjects()
+                        .SelectMany(x => x.GetComponentsInChildren<MeshCollider>())
+                        .Where(x => !x.convex)
+                        .ToList();
+                    offenders.ForEach(x => Debug.LogWarning($"Non-Convex MeshCollider: {x.gameObject.name}", x.gameObject));
+                    return offenders.Count == 0;
+                }
             )
         );
 
