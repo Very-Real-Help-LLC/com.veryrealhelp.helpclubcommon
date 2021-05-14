@@ -18,6 +18,10 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         [MenuItem("VRH/Placeholders/Portal Placeholder")]
         public static void CreatePortalPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<PortalPlaceholder>(menuCommand, "Portal Placeholder");
 
+        [MenuItem("VRH/Placeholders/Generic Portal Placeholder")]
+        public static void CreateGenericPortalPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<GenericPortalPlaceHolder>(menuCommand, "Generic Portal Placeholder");
+
+
         [MenuItem("VRH/Placeholders/Prop Placeholder")]
         public static void CreatePropPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<PropPlaceHolder>(menuCommand, "Prop Placeholder");
     }
