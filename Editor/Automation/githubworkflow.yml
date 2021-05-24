@@ -23,10 +23,6 @@ jobs:
       - name: Run jobRunnerPowershell script
         run: .\runner_job.ps1
         shell: pwsh
-      - uses: actions/upload-artifact@v2
-        with:
-          name: "unity_build.log"
-          path: ${{ env.ACTION_LOG_FILE }}
       - uses: rennat/upload-s3-action@master
         with:
           AWS_S3_BUCKET: 'vrh-test'
@@ -53,10 +49,6 @@ jobs:
       - name: Run jobRunnerPowershell script
         run: .\runner_job.ps1
         shell: powershell
-      - uses: actions/upload-artifact@v2
-        with:
-          name: "unity_build.log"
-          path: ${{ env.ACTION_LOG_FILE }}
       - uses: rennat/upload-s3-action@master
         with:
           AWS_S3_BUCKET: 'vrh-test'
