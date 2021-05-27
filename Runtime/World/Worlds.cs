@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace VeryRealHelp.HelpClubCommon.World
 {
-
+    [Obsolete("WorldId enum is deprecated, use string world ids instead. For name lookups use `WorldInfoManager.GetWorldDefinition`")]
     public enum WorldId
     {
         Home = -1,
