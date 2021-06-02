@@ -41,5 +41,6 @@ namespace VeryRealHelp.HelpClubCommon.Prop
         public PropPhysicsType PhysicsType;
         public GameObject Prefab;
         public CardDefinition CardSet;
+        public Sprite PropPreviewImage;
     }
 }
