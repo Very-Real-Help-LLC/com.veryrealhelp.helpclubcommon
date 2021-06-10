@@ -8,6 +8,7 @@ namespace VeryRealHelp.HelpClubCommon.Schema
     public class BundleSetDefinition
     {
         public string uriRoot;
+        public string devUriRoot;
         public string androidPath;
         public string osxPath;
         public string windowsPath;
@@ -36,10 +37,12 @@ namespace VeryRealHelp.HelpClubCommon.Schema
         }
 
         public string Uri => $"{uriRoot}/{Path}";
+        public string DevUri => string.IsNullOrWhiteSpace(devUriRoot) ? Uri : $"{devUriRoot}/{Path}";
         public string AssetPath => $"{Application.streamingAssetsPath}/{Path}";
         public string ManifestPath => $"{Path}/{Path.Split('/').Last()}";
         public string ManifestAssetPath => $"{Application.streamingAssetsPath}/{ManifestPath}";
         public string ManifestUri => $"{uriRoot}/{ManifestPath}";
+        public string DevManifestUri => string.IsNullOrWhiteSpace(devUriRoot) ? ManifestUri : $"{devUriRoot}/{ManifestPath}";
     }
 
     [Serializable]
