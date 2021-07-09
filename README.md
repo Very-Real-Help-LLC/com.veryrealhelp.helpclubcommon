@@ -1,3 +1,10 @@
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon?style=flat-square)
+[![GitHub license](https://img.shields.io/github/license/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon?style=flat-square)](https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon/blob/master/LICENSE)
+[![GitHub workflow changelog](https://img.shields.io/github/workflow/status/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon/Changelog?style=flat-square&label=github-actions)](https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon/actions?query=workflow%3AChangelog)
+[![GitHub contributors](https://img.shields.io/github/contributors-anon/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon?style=flat-square)](https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon/graphs/contributors)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon?style=flat-square)](https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon/commits/master)
+
+
 These are common pieces of code for use in the Help Club app by Very Real Help.
 
 # Usage
