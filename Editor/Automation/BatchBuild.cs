@@ -133,9 +133,14 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             Debug.Log("Validating Project...");
             WorldDefinition worldDefinition = null;
             var worldInfos = WorldInfoEditor.GetAllWorldInfos().ToList();
+            string worldInfoPath;
+            string worldInfoBundle;
+            WorldInfo worldInfo;
+            string thumbnailAssetPath;
             if (worldInfos.Count == 0)
             {
                 Debug.Log("No WorldInfo assets found");
+                return;
             }
             else if (worldInfos.Count > 1)
             {
@@ -145,9 +150,9 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             else
             {
                 Debug.Log("WORLD INFOS: " + string.Join(" ", worldInfos));
-                var worldInfo = worldInfos.First();
-                var worldInfoPath = AssetDatabase.GetAssetPath(worldInfo);
-                var worldInfoBundle = AssetDatabase.GetImplicitAssetBundleName(worldInfoPath);
+                worldInfo = worldInfos.First();
+                worldInfoPath = AssetDatabase.GetAssetPath(worldInfo);
+                worldInfoBundle = AssetDatabase.GetImplicitAssetBundleName(worldInfoPath);
                 worldDefinition = new WorldDefinition
                 {
                     name = Application.productName,
@@ -161,19 +166,33 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                 if (!WorldValidator.ValidateAll())
                 {
                     Error("Failed to Validate WorldInfo");
+                    return;
+                }
+                else
+                {
+                    thumbnailAssetPath = AssetDatabase.GetAssetPath(worldInfo.previewTexture);
+                    worldDefinition.thumbnailPath = Path.GetFileName(thumbnailAssetPath);
                 }
             }
 
-            Debug.Log("Building Project...");
             if (Directory.Exists(config.buildRoot))
             {
+                Debug.Log("Removing Previous Build...");
                 Directory.Delete(config.buildRoot, recursive: true);
             }
+
+            Debug.Log("Building Project...");
             Directory.CreateDirectory(config.buildRoot);
+            Directory.CreateDirectory(config.BuildPath);
+            var thumbnailDestinationPath = $"{config.BuildPath}/{worldDefinition.thumbnailPath}";
+            Debug.Log($"Copying Thumbnail... {thumbnailAssetPath} --> {thumbnailDestinationPath}");
+            File.Copy(thumbnailAssetPath, thumbnailDestinationPath, true);
+
             foreach (var target in config.targets)
             {
                 DoBuild(config, target);
             }
+
 
             Debug.Log("Building Manifest...");
             var manifestBundlePath = config.buildRoot + "/" + config.GetManifestPath(config.targets.First());
@@ -214,6 +233,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
 
         private static void DoBuild(BuildConfig config, BuildTarget buildTarget)
         {
+            Debug.Log($"Building {buildTarget}...");
             string path = config.GetBuildPath(buildTarget);
             Directory.CreateDirectory(path);
             BuildAssetBundleOptions bundleOptions = BuildAssetBundleOptions.ForceRebuildAssetBundle & BuildAssetBundleOptions.StrictMode & BuildAssetBundleOptions.ChunkBasedCompression;
