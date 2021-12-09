@@ -28,6 +28,7 @@
         struct Input
         {
             float2 uv_MainTex;
+            float4 vertColor : Color;
         };
 
         fixed4 _Color;
@@ -41,7 +42,7 @@
 
         void surf (Input IN, inout SurfaceOutputStandardSpecular o)
         {
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+            fixed4 c = IN.vertColor * tex2D (_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c.rgb;
 			o.Alpha = c.a;
 			fixed4 shiny = lerp(tex2D(_ShinyTex, IN.uv_MainTex), _ShinyColor, _ShinyColor.a);
