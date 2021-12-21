@@ -136,11 +136,10 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             string worldInfoPath;
             string worldInfoBundle;
             WorldInfo worldInfo;
-            string thumbnailAssetPath;
+            string worldThumbnailAssetPath = null;
             if (worldInfos.Count == 0)
             {
                 Debug.Log("No WorldInfo assets found");
-                return;
             }
             else if (worldInfos.Count > 1)
             {
@@ -166,12 +165,11 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                 if (!WorldValidator.ValidateAll())
                 {
                     Error("Failed to Validate WorldInfo");
-                    return;
                 }
                 else
                 {
-                    thumbnailAssetPath = AssetDatabase.GetAssetPath(worldInfo.previewTexture);
-                    worldDefinition.thumbnailPath = Path.GetFileName(thumbnailAssetPath);
+                    worldThumbnailAssetPath = AssetDatabase.GetAssetPath(worldInfo.previewTexture);
+                    worldDefinition.thumbnailPath = Path.GetFileName(worldThumbnailAssetPath);
                 }
             }
 
@@ -184,9 +182,13 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
             Debug.Log("Building Project...");
             Directory.CreateDirectory(config.buildRoot);
             Directory.CreateDirectory(config.BuildPath);
-            var thumbnailDestinationPath = $"{config.BuildPath}/{worldDefinition.thumbnailPath}";
-            Debug.Log($"Copying Thumbnail... {thumbnailAssetPath} --> {thumbnailDestinationPath}");
-            File.Copy(thumbnailAssetPath, thumbnailDestinationPath, true);
+
+            if (worldThumbnailAssetPath != null)
+            {
+                var worldThumbnailDestinationPath = $"{config.BuildPath}/{worldDefinition.thumbnailPath}";
+                Debug.Log($"Copying World Thumbnail... {worldThumbnailAssetPath} --> {worldThumbnailDestinationPath}");
+                File.Copy(worldThumbnailAssetPath, worldThumbnailDestinationPath, true);
+            }
 
             foreach (var target in config.targets)
             {
