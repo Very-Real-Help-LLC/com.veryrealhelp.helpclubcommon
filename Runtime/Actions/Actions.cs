@@ -11,7 +11,8 @@ namespace VeryRealHelp.HelpClubCommon.Actions
         Destroy = 1 << 1,
         Modify = 1 << 2,
         LockToggle = 1 << 3,
-        Everything = 1 << 4
+        Everything = 1 << 4,
+        Report = 1 << 5,
     }
 
     public interface IActionHandler
