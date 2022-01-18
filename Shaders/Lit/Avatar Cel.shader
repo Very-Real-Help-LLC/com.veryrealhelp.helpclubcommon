@@ -72,6 +72,8 @@
                 float4 position : POSITION;
 				float3 normal : NORMAL;
 				float2 uv : TEXCOORD0;
+
+				UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct VertexOutput
@@ -82,12 +84,16 @@
 				half3 worldNormal : TEXCOORD2;
 				fixed4 color : COLOR0;
 				UNITY_FOG_COORDS(1)
+				UNITY_VERTEX_OUTPUT_STEREO
             };
 
 
 			VertexOutput vert (VertexInput v)
             {
 				VertexOutput o;
+				UNITY_SETUP_INSTANCE_ID(v);
+				UNITY_INITIALIZE_OUTPUT(VertexOutput, o);
+				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.position = UnityObjectToClipPos(v.position);
 				o.uv = v.uv;
 				o.worldPosition = mul(unity_ObjectToWorld, v.position).xyz;
