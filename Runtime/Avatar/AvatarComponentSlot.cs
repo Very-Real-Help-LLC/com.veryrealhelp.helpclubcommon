@@ -15,7 +15,10 @@ namespace VeryRealHelp.HelpClubCommon.Avatar
         Back,
         Hand,
         EyeBrows,
-        Wrists
+        Wrists,
+        Mask,
+        FacialAccessory,
+        TorsoAccessory,
     }
 
     public enum AvatarComponentColorSlot
