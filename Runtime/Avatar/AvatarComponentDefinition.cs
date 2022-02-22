@@ -7,5 +7,6 @@ namespace VeryRealHelp.HelpClubCommon.Avatar
     {
         public AvatarComponentSlot slot;
         public GameObject prefab;
+        public Sprite thumbnailIcon;
     }
 }
