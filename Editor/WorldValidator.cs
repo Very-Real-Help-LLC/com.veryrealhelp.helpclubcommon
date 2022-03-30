@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Presets;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -119,6 +120,26 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             new CheckCollection.Check(
                 "Render Pipeline", "Should use Unity Standard Rendering",
                 () => GraphicsSettings.renderPipelineAsset == null
+            ),
+            new CheckCollection.Check(
+                $"Quality Settings", "Should use Quality Settings from Preset",
+                () => {
+                    var cachedActiveObject = Selection.activeObject;
+                    Preset qualitySettings = (Preset)AssetDatabase.LoadAssetAtPath("Packages/com.veryrealhelp.helpclubcommon/Presets/QualitySettings.preset", typeof(Preset));
+                    Selection.activeObject = Unsupported.GetSerializedAssetInterfaceSingleton("QualitySettings"); //Workaround: no motheds exposed in 2019 LTS to directly access editors quality settings (Project/Quality)
+                    bool presetEquals = qualitySettings.DataEquals(Selection.activeObject);
+                    Selection.activeObject = cachedActiveObject;
+                    return presetEquals;
+                },
+                () =>
+                {
+                    var cachedActiveObject = Selection.activeObject;
+                    Preset qualitySettings = (Preset)AssetDatabase.LoadAssetAtPath("Packages/com.veryrealhelp.helpclubcommon/Presets/QualitySettings.preset", typeof(Preset));
+                    Selection.activeObject = SettingsService.OpenProjectSettings("Project/Quality");
+                    Selection.activeObject = Unsupported.GetSerializedAssetInterfaceSingleton("QualitySettings");
+                    qualitySettings.ApplyTo(Selection.activeObject);
+                    Selection.activeObject = cachedActiveObject;
+                }
             )
         );
 
