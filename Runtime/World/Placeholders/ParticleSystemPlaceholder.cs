@@ -28,10 +28,11 @@ namespace VeryRealHelp.HelpClubCommon.World
         {
             if (isActiveAndEnabled)
             {
+                Gizmos.matrix = transform.localToWorldMatrix;
                 Color transparentAreaColor = Color.blue;
                 transparentAreaColor.a = 0.2f;
                 Gizmos.color = transparentAreaColor;
-                Gizmos.DrawCube(transform.localPosition, spawnAreaSize);
+                Gizmos.DrawCube(Vector3.zero, spawnAreaSize);
             }
         }
     }
