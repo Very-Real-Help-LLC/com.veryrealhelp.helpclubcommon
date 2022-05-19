@@ -21,8 +21,13 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         [MenuItem("VRH/Placeholders/Generic Portal Placeholder")]
         public static void CreateGenericPortalPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<GenericPortalPlaceHolder>(menuCommand, "Generic Portal Placeholder");
 
+        [MenuItem("VRH/Placeholders/Mirror Placeholder")]
+        public static void CreateMirrorPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<MirrorPlaceholder>(menuCommand, "Mirror Placeholder");
 
         [MenuItem("VRH/Placeholders/Prop Placeholder")]
         public static void CreatePropPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<PropPlaceHolder>(menuCommand, "Prop Placeholder");
+
+        [MenuItem("VRH/Placeholders/Particle System Placeholder")]
+        public static void CreateParticleSystemPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<ParticleSystemPlaceholder>(menuCommand, "Particle System Placeholder");
     }
 }
