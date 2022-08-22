@@ -29,5 +29,9 @@ namespace VeryRealHelp.HelpClubCommon.Editor
 
         [MenuItem("VRH/Placeholders/Particle System Placeholder")]
         public static void CreateParticleSystemPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<ParticleSystemPlaceholder>(menuCommand, "Particle System Placeholder");
+
+        [MenuItem("VRH/Placeholders/PlaybackStation Placeholder")]
+        public static void CreatePlaybackStationPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<PlaybackStationPlaceholder>(menuCommand, "PlaybackStation Placeholder");
+
     }
 }
