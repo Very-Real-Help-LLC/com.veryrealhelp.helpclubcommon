@@ -10,6 +10,9 @@ namespace VeryRealHelp.HelpClubCommon.World
     public class PlaybackStationPlaceholder : Placeholder
     {
         private static readonly Vector3 mirrorSize = new Vector3(2.5f, 0.15f, 2.5f);
+
+        public string playlistId;
+        public string[] recordingIds;
         public string category;
 
 #if UNITY_EDITOR
