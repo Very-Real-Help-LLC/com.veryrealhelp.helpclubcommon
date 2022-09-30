@@ -11,7 +11,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
 {
     public static class WorldValidator
     {
-        public static readonly string[] VALID_MODEL_EXTENSIONS = { "fbx", "dae", "3ds", "dxf", "obj", "asset" };
+        public static readonly string[] VALID_MODEL_EXTENSIONS = { "fbx", "dae", "3ds", "dxf", "obj", "asset", "mesh" };
 
         [MenuItem("VRH/Worlds/Validate All Worlds")]
         public static bool ValidateAll()
