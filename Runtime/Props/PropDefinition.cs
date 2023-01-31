@@ -42,5 +42,6 @@ namespace VeryRealHelp.HelpClubCommon.Prop
         public GameObject Prefab;
         public CardDefinition CardSet;
         public Sprite PropPreviewImage;
+        public bool isPremium;
     }
 }
