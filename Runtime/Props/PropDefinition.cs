@@ -5,6 +5,8 @@ namespace VeryRealHelp.HelpClubCommon.Prop
     [CreateAssetMenu(fileName = "Prop Definition", menuName = "Very Real Help/Prop/PropDefinition")]
     public class PropDefinition : ScriptableObject
     {
+        public int Id;
+
         public enum PropType
         {
             Default = 1,
