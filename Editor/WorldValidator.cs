@@ -92,27 +92,6 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 () => PlayerSettings.SetVirtualRealitySupported(BuildTargetGroup.Standalone, true)
             ),
             new CheckCollection.Check(
-                "Standalone VR", "Oculus SDK should be selected",
-                () => {
-                    string[] activeSdks = PlayerSettings.GetVirtualRealitySDKs(BuildTargetGroup.Standalone);
-                    return Array.IndexOf(activeSdks, "Oculus") != -1;
-                },
-                () => PlayerSettings.SetVirtualRealitySDKs(BuildTargetGroup.Standalone, new string[] { "Oculus" })
-            ),
-            new CheckCollection.Check(
-                "Android VR", "Oculus SDK should be selected",
-                () => {
-                    string[] activeSdks = PlayerSettings.GetVirtualRealitySDKs(BuildTargetGroup.Android);
-                    return Array.IndexOf(activeSdks, "Oculus") != -1;
-                },
-                () => PlayerSettings.SetVirtualRealitySDKs(BuildTargetGroup.Android, new string[] { "Oculus" })
-            ),
-            new CheckCollection.Check(
-                "Oculus SDK", "Should use V2 Signing",
-                () => PlayerSettings.VROculus.v2Signing,
-                () => PlayerSettings.VROculus.v2Signing = true
-            ),
-            new CheckCollection.Check(
                 "Stereo Rendering Mode", "Should be set to Single Pass",
                 () => PlayerSettings.stereoRenderingPath == StereoRenderingPath.SinglePass,
                 () => PlayerSettings.stereoRenderingPath = StereoRenderingPath.SinglePass
