@@ -5,6 +5,7 @@ using UnityEditor.Presets;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 using VeryRealHelp.HelpClubCommon.World;
 
 namespace VeryRealHelp.HelpClubCommon.Editor
@@ -215,6 +216,28 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                         }
                         return valid;
                     })
+            ),
+            new CheckCollection.Check(
+                "NavMesh Collider", "NavMesh baked for scene & NavMesh are colliders setup in scene",
+                () =>
+                {
+                    //NavMesh.asset exists
+                    var activeScene = SceneManager.GetActiveScene().name;
+                    var navMeshAssetPath = $"{Application.dataPath}/Scenes/{activeScene}/NavMesh.asset";
+                    if(!System.IO.File.Exists(navMeshAssetPath))
+                    {
+                        return false;
+                    }
+                    //NavMesh Collider exists in scene
+                    if (GameObject.Find(NavMeshCreator.NavMeshColliderPrefab) == null)
+                    {
+                        return false;
+                    }
+                    return true;
+                },
+                () => {
+                    NavMeshCreator.CreateNavMesh();
+                }
             )
         );
 
