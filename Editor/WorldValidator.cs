@@ -82,21 +82,6 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 () => EditorUserBuildSettings.androidBuildSubtarget = MobileTextureSubtarget.ASTC
             ),
             new CheckCollection.Check(
-                "Android VR", "Should be enabled",
-                () => PlayerSettings.GetVirtualRealitySupported(BuildTargetGroup.Android),
-                () => PlayerSettings.SetVirtualRealitySupported(BuildTargetGroup.Android, true)
-            ),
-            new CheckCollection.Check(
-                "Standalone VR", "Should be enabled",
-                () => PlayerSettings.GetVirtualRealitySupported(BuildTargetGroup.Standalone),
-                () => PlayerSettings.SetVirtualRealitySupported(BuildTargetGroup.Standalone, true)
-            ),
-            new CheckCollection.Check(
-                "Stereo Rendering Mode", "Should be set to Single Pass",
-                () => PlayerSettings.stereoRenderingPath == StereoRenderingPath.SinglePass,
-                () => PlayerSettings.stereoRenderingPath = StereoRenderingPath.SinglePass
-            ),
-            new CheckCollection.Check(
                 "Render Pipeline", "Should use Unity Standard Rendering",
                 () => GraphicsSettings.renderPipelineAsset == null
             ),
