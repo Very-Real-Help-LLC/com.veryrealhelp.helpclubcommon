@@ -45,5 +45,6 @@ namespace VeryRealHelp.HelpClubCommon.Prop
         public CardDefinition CardSet;
         public Sprite PropPreviewImage;
         public bool isPremium;
+        public bool enablesFly;
     }
 }
