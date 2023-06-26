@@ -122,7 +122,7 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: layers.Array.data[24]
-    value: 
+    value: PhysicsOnly
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: layers.Array.data[25]
