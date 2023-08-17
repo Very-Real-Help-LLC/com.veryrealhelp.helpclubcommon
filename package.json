@@ -1,13 +1,13 @@
 {
   "name": "com.veryrealhelp.helpclubcommon",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "displayName": "VRH Help Club Common",
   "description": "Shared resources for the various Help Club Unity projects.",
   "unity": "2018.4",
   "repository": {
     "type": "git",
     "url": "git@github.com:Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git",
-    "revision": "0.9.5"
+    "revision": "0.9.6"
   },
   "dependencies": {
     "com.unity.editorcoroutines": "0.1.0-preview.1",
