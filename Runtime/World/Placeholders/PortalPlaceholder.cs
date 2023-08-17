@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,6 +10,10 @@ namespace VeryRealHelp.HelpClubCommon.World
     {
         private static readonly Vector3 portalSize = new Vector3(1.9f, 2.5f, 0.1f);
 
+        [Header("Destination (World Id integer)")]
+        public string destination;
+        [Header("[Obsolete use `destination` instead]")]
+        [Obsolete("Use the string `destination` field instead")]
         public WorldId worldId;
 
         public void OnDrawGizmos()
