@@ -20,6 +20,6 @@ namespace VeryRealHelp.HelpClubCommon.World
                 Gizmos.DrawCube(menuPanelOffset, bulletinboardBounds);
             }
         }
-    }
 #endif
+    }
 }
