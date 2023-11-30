@@ -33,6 +33,7 @@ namespace VeryRealHelp.HelpClubCommon.World
             if (!isActiveAndEnabled) return;
 
             Gizmos.color = Color.yellow;
+            if(spawnPoints == null) return;
             foreach (var spawnPoint in spawnPoints)
             {
                 if (spawnPoint.spawnLocation == null)
