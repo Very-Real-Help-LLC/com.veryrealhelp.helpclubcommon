@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace VeryRealHelp.HelpClubCommon.World
 {
-    public class SpawnPointPlaceholder : Placeholder
+    public class SpawnPlaceholder : Placeholder
     {
         // This does not necessarily match the user roles in the client
         public enum UserRole

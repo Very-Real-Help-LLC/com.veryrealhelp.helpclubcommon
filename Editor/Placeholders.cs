@@ -34,7 +34,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         public static void CreatePlaybackStationPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<PlaybackStationPlaceholder>(menuCommand, "PlaybackStation Placeholder");
         
         [MenuItem("VRH/Placeholders/SpawnPoint Placeholder")]
-        public static void CreateSpawnPointPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<SpawnPointPlaceholder>(menuCommand, "SpawnPoint Placeholder");
+        public static void CreateSpawnPointPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<SpawnPlaceholder>(menuCommand, "SpawnPoint Placeholder");
 
         [MenuItem("VRH/Placeholders/Bulletin Board Placeholder")]
         public static void CreateBulletinboardPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<BulletinboardPlaceholder>(menuCommand, "Bulletin Board Placeholder");
