@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Presets;
@@ -39,6 +40,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             {
                 settingsChecks,
                 sceneRequirementChecks,
+                assetBundleChecks,
                 worldInfoChecks,
             };
             uint count = 0;
@@ -227,6 +229,23 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             )
         );
 
+        public static readonly CheckCollection assetBundleChecks = new CheckCollection(
+            new CheckCollection.Check(
+                "Check Asset Bundle Assignments",
+                "Ensure all scene assets are assigned to the correct asset bundles",
+                test: () =>
+                {
+                    // Check if assets are already assigned to the correct bundles
+                    return AreAssetsAssignedToCorrectBundles();
+                },
+                fix: () =>
+                {
+                    // Assign assets to the correct bundles if needed
+                    AssignAssetsToBundles();
+                }
+            )
+        );
+
         public static readonly CheckCollection worldInfoChecks = new CheckCollection(
             () => AssetDatabase.FindAssets("t:WorldInfo")
                 .Select(AssetDatabase.GUIDToAssetPath)
@@ -277,108 +296,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                             importer.mipmapEnabled = true;
                             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
                         }
-                    ),
-                    new CheckCollection.Check(
-                        "Check Asset Bundle Assignments",
-                        "Ensure all scene assets are assigned to the correct asset bundles",
-                        test: () => {
-                            // Check if assets are already assigned to the correct bundles
-                            return AreAssetsAssignedToCorrectBundles();
-                        },
-                        fix: () => {
-                            // Assign assets to the correct bundles if needed
-                            AssignAssetsToBundles();
-                        }
-                    ),
-                    new CheckCollection.Check(
-                        $"WorldInfo: {worldInfo.name}", "WorldInfo should be in the info bundle",
-                        () =>
-                        {
-                            // Define the bundle names using Application.productName as a prefix
-                            var assetBundlePrefix = Application.productName.ToLower().Replace(" ", "_");
-                            var infoBundleName = $"{assetBundlePrefix}_info";
-                            return CheckAssetBundleName(worldInfo, infoBundleName);
-                        }, () =>
-                        {
-                            // Define the bundle names using Application.productName as a prefix
-                            var assetBundlePrefix = Application.productName.ToLower().Replace(" ", "_");
-                            var infoBundleName = $"{assetBundlePrefix}_info";
-                            TrySetAssetBundleName(worldInfo, infoBundleName);
-                        }
-                    ),
-                    new CheckCollection.Check(
-                        $"WorldInfo: {worldInfo.name}", "Bundles should have a Render Settings File",
-                        test: () => {
-                            var sceneAssetName = AssetDatabase.GetAssetPath(worldInfo.sceneAsset);
-                            var sceneBundleName = AssetDatabase.GetImplicitAssetBundleName(sceneAssetName);
-                            var bundleNames = AssetDatabase.GetAssetBundleDependencies(sceneBundleName, true);
-                            return AssetDatabase.FindAssets("t:RenderSettingsFile")
-                                .Select(AssetDatabase.GUIDToAssetPath)
-                                .Select(AssetDatabase.GetImplicitAssetBundleName)
-                                .Any(renderSettingsBundleName => bundleNames.Contains(renderSettingsBundleName));
-                        },
-                        fix: () => {
-                            var sceneAssetName = AssetDatabase.GetAssetPath(worldInfo.sceneAsset);
-                            var sceneBundleName = AssetDatabase.GetImplicitAssetBundleName(sceneAssetName);
-                            var bundleNames = AssetDatabase.GetAssetBundleDependencies(sceneBundleName, true);
-
-                            // Assuming we use the first bundle name from the dependencies
-                            string targetBundleName = bundleNames.FirstOrDefault();
-                            if (string.IsNullOrEmpty(targetBundleName))
-                            {
-                                Debug.LogWarning("No bundle dependencies found. Cannot assign RenderSettingsFile to a bundle.");
-                                return;
-                            }
-
-                            string[] renderSettingsFiles = AssetDatabase.FindAssets("t:RenderSettingsFile");
-                            if (renderSettingsFiles.Length > 0)
-                            {
-                                string firstRenderSettingsFilePath = AssetDatabase.GUIDToAssetPath(renderSettingsFiles[0]);
-                                AssetImporter importer = AssetImporter.GetAtPath(firstRenderSettingsFilePath);
-                                importer.SetAssetBundleNameAndVariant(targetBundleName, "");
-
-                                Debug.Log($"RenderSettingsFile '{firstRenderSettingsFilePath}' assigned to bundle '{targetBundleName}'.");
-                            }
-                            else
-                            {
-                                Debug.LogWarning("No RenderSettingsFile found to assign to bundle.");
-                            }
-                        }
-                    ),
-                    new CheckCollection.Check(
-                        $"WorldInfo: {worldInfo.name}", "Portal Texture should be in the same bundle as WorldInfo",
-                        () => {
-                            var exists = worldInfo.portalTexture != null;
-                            if (!exists) return false;
-                            var worldInfoBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo));
-                            var portalTextureBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo.portalTexture));
-                            return worldInfoBundleName == portalTextureBundleName;
-                        },
-                        () =>
-                        {
-                            var exists = worldInfo.portalTexture != null;
-                            if (!exists) return;
-                            var worldInfoBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo));
-                            AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(worldInfo.portalTexture)).SetAssetBundleNameAndVariant(worldInfoBundleName, "");
-                        }
-                    ),
-                    new CheckCollection.Check(
-                        $"WorldInfo: {worldInfo.name}", "Preview Texture should be in the same bundle as WorldInfo",
-                        () => {
-                            var exists = worldInfo.previewTexture != null;
-                            if (!exists) return false;
-                            var worldInfoBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo));
-                            var previewTextureBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo.previewTexture));
-                            return worldInfoBundleName == previewTextureBundleName;
-                        },
-                        () =>
-                        {
-                            var exists = worldInfo.previewTexture != null;
-                            if (!exists) return;
-                            var worldInfoBundleName = AssetDatabase.GetImplicitAssetBundleName(AssetDatabase.GetAssetPath(worldInfo));
-                            AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(worldInfo.previewTexture)).SetAssetBundleNameAndVariant(worldInfoBundleName, "");
-                        }
-                    ),
+                    )
                 })
         );
 
@@ -415,40 +333,86 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         [MenuItem("VRH/Automation/Assign Assets To Bundles")]        
         public static void AssignAssetsToBundles()
         {
+            // Clear all the bundles to avoid old unused assets being added by accident
+            DeleteAllAssetBundles();
+            
             // Define the bundle names using Application.productName as a prefix
             var assetBundlePrefix = Application.productName.ToLower().Replace(" ", "_");
-            
             var sceneBundleName = $"{assetBundlePrefix}_scene";
-            var assetsBundleName = $"{assetBundlePrefix}_stuff";
+            var stuffBundleName = $"{assetBundlePrefix}_stuff";
+            var infoBundleName = $"{assetBundlePrefix}_info";
 
-            // Assign the current scene to a bundle
-            var scenePath = SceneManager.GetActiveScene().path;
-            AssetImporter.GetAtPath(scenePath).SetAssetBundleNameAndVariant(sceneBundleName, "");
-
-            // Iterate over all GameObjects in the scene
+            // Iterate over all GameObjects in the scene and add them and their dependencies to the stuff bundle
             foreach (var obj in Object.FindObjectsOfType<GameObject>())
             {
-                SetAssetBundleNameForAllProperties(obj, assetsBundleName);
+                SetAssetBundleNameForAllProperties(obj, stuffBundleName);
                 Object prefabAsset = PrefabUtility.GetCorrespondingObjectFromSource(obj);
                 if (prefabAsset != null)
                 {
-                    SetAssetBundleNameForAllProperties(prefabAsset, assetsBundleName);    
+                    SetAssetBundleNameForAllProperties(prefabAsset, stuffBundleName);    
                 }
                 
-                // Get all components on the GameObject, including children and inactive components
                 var components = obj.GetComponentsInChildren<Component>(true);
                 foreach (var component in components)
                 {
-                    SetAssetBundleNameForAllProperties(component, assetsBundleName);
+                    SetAssetBundleNameForAllProperties(component, stuffBundleName);
                 }
             }
 
+            // Add skybox to stuff bundle
             var skyboxMaterial = RenderSettings.skybox;
             if (skyboxMaterial != null)
             {
-                SetAssetBundleNameForAllProperties(skyboxMaterial, assetsBundleName);
+                SetAssetBundleNameForAllProperties(skyboxMaterial, stuffBundleName);
             }
+            
+            // Add lighting data to stuff bundle
+            var lightmaps = LightmapSettings.lightmaps;
+            foreach (var lightmapData in lightmaps)
+            {
+                if (lightmapData.lightmapColor != null) SetAssetBundleNameForAllProperties(lightmapData.lightmapColor, stuffBundleName);
+                if (lightmapData.lightmapDir != null) SetAssetBundleNameForAllProperties(lightmapData.lightmapDir, stuffBundleName);
+                if (lightmapData.shadowMask != null) SetAssetBundleNameForAllProperties(lightmapData.shadowMask, stuffBundleName);
+            }
+            if (Lightmapping.lightingDataAsset != null)
+            {
+                TrySetAssetBundleName(Lightmapping.lightingDataAsset, stuffBundleName);
+            }
+            
+            // Add the render setting file to the stuff bundle
+            var renderSettingsAsset = AssetDatabase.FindAssets("t:RenderSettingsFile")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<RenderSettingsFile>).FirstOrDefault();
+            if (renderSettingsAsset != null)
+            {
+                TrySetAssetBundleName(renderSettingsAsset, stuffBundleName);
+            }
+            
+            // Add the world info object to the info bundle
+            var worldInfoAsset = AssetDatabase.FindAssets("t:WorldInfo")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<WorldInfo>).FirstOrDefault();
+            if (worldInfoAsset != null)
+            {
+                // We don't use the recursive setter here because that would stomp on the scene asset's bundle path.
+                TrySetAssetBundleName(worldInfoAsset, infoBundleName);
 
+                if (worldInfoAsset.previewTexture != null)
+                {
+                    TrySetAssetBundleName(worldInfoAsset.previewTexture, infoBundleName);
+                }
+                if (worldInfoAsset.portalTexture != null)
+                {
+                    TrySetAssetBundleName(worldInfoAsset.portalTexture, infoBundleName);
+                }
+                
+                // Add the scene to the scene bundle
+                if (worldInfoAsset.sceneAsset != null)
+                {
+                    TrySetAssetBundleName(worldInfoAsset.sceneAsset, sceneBundleName);
+                }
+            }
+            
             Debug.Log("Assets have been assigned to their respective bundles.");
         }
 
@@ -456,17 +420,14 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         {
             // Define the bundle names using Application.productName as a prefix
             var assetBundlePrefix = Application.productName.ToLower().Replace(" ", "_");
-            
             var sceneBundleName = $"{assetBundlePrefix}_scene";
-            var assetsBundleName = $"{assetBundlePrefix}_stuff";
-
-            // Check the current scene's bundle assignment
-            var scenePath = SceneManager.GetActiveScene().path;
-            var sceneAssetBundleName = AssetImporter.GetAtPath(scenePath).assetBundleName;
-            if (sceneAssetBundleName != sceneBundleName)
-            {
-                return false; // Scene is not assigned to the correct bundle
-            }
+            var stuffBundleName = $"{assetBundlePrefix}_stuff";
+            var infoBundleName = $"{assetBundlePrefix}_info";
+            
+            // Collections we'll use to verify bundle contents
+            var expectedSceneBundlePaths = new HashSet<string>();
+            var expectedStuffBundlePaths = new HashSet<string>();
+            var expectedInfoBundlePaths = new HashSet<string>();
 
             // Iterate over all GameObjects in the scene
             foreach (var obj in Object.FindObjectsOfType<GameObject>())
@@ -474,27 +435,132 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 Object prefabAsset = PrefabUtility.GetCorrespondingObjectFromSource(obj);
                 if (prefabAsset != null)
                 {
-                    CheckAssetBundleNameForAllProperties(prefabAsset, assetsBundleName);    
+                    CheckAssetBundleNameForAllProperties(prefabAsset, stuffBundleName, expectedStuffBundlePaths);    
                 }
                 
-                CheckAssetBundleNameForAllProperties(obj, assetsBundleName);
+                CheckAssetBundleNameForAllProperties(obj, stuffBundleName, expectedStuffBundlePaths);
                 
                 // Get all components on the GameObject, including children and inactive components
                 var components = obj.GetComponentsInChildren<Component>(true);
                 foreach (var component in components)
                 {
-                    var valid = CheckAssetBundleNameForAllProperties(component, assetsBundleName);
+                    var valid = CheckAssetBundleNameForAllProperties(component, stuffBundleName, expectedStuffBundlePaths);
                     if (!valid) return false;
                 }
             }
-
+            
+            // Check skybox
             var skyboxMaterial = RenderSettings.skybox;
             if (skyboxMaterial != null)
             {
-                var valid = CheckAssetBundleNameForAllProperties(skyboxMaterial, assetsBundleName);
+                var valid = CheckAssetBundleNameForAllProperties(skyboxMaterial, stuffBundleName, expectedStuffBundlePaths);
                 if (!valid) return false;
             }
+            // Check lighting data
+            var lightmaps = LightmapSettings.lightmaps;
+            foreach (var lightmapData in lightmaps)
+            {
+                if (lightmapData.lightmapColor != null)
+                {
+                    var valid = CheckAssetBundleNameForAllProperties(lightmapData.lightmapColor, stuffBundleName, expectedStuffBundlePaths);
+                    if (!valid) return false;
+                }
 
+                if (lightmapData.lightmapDir != null)
+                {
+                    var valid = CheckAssetBundleNameForAllProperties(lightmapData.lightmapDir, stuffBundleName, expectedStuffBundlePaths);
+                    if (!valid) return false;
+                }
+
+                if (lightmapData.shadowMask != null)
+                {
+                    if (!CheckAssetBundleNameForAllProperties(lightmapData.shadowMask, stuffBundleName,
+                            expectedStuffBundlePaths)) return false;
+                }
+            }
+            if (Lightmapping.lightingDataAsset != null)
+            {
+                if (!CheckAssetBundleName(Lightmapping.lightingDataAsset, stuffBundleName, expectedStuffBundlePaths))
+                    return false;
+            }
+            
+            // Check render settings asset
+            var renderSettingsAsset = AssetDatabase.FindAssets("t:RenderSettingsFile")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<RenderSettingsFile>).FirstOrDefault();
+            if (renderSettingsAsset != null)
+            {
+                if (!CheckAssetBundleName(renderSettingsAsset, stuffBundleName, expectedStuffBundlePaths)) return false;
+            }
+            else
+            {
+                Debug.LogError("Render Settings Asset wasn't found!");
+                return false;
+            }
+            
+            // Check world info asset
+            var worldInfoAsset = AssetDatabase.FindAssets("t:WorldInfo")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<WorldInfo>).FirstOrDefault();
+            if (worldInfoAsset != null)
+            {
+                // We don't use the recursive checker here because the scene goes in a different bundle to the other info assets 
+                if (!CheckAssetBundleName(worldInfoAsset, infoBundleName, expectedInfoBundlePaths)) return false;
+
+                if (worldInfoAsset.previewTexture != null)
+                {
+                    if (!CheckAssetBundleName(worldInfoAsset.previewTexture, infoBundleName, expectedInfoBundlePaths))
+                        return false;
+                }
+                if (worldInfoAsset.portalTexture != null)
+                {
+                    if (!CheckAssetBundleName(worldInfoAsset.portalTexture, infoBundleName, expectedInfoBundlePaths))
+                        return false;
+                }
+
+                // Check scene
+                if (worldInfoAsset.sceneAsset != null)
+                {
+                    if (!CheckAssetBundleName(worldInfoAsset.sceneAsset, sceneBundleName, expectedSceneBundlePaths))
+                        return false;
+                }
+            }
+            else
+            {
+                Debug.LogError("WorldInfo Asset wasn't found!");
+                return false;
+            }
+            
+            // Make sure only the expected assets are in each bundle
+            var stuffBundleAssetPaths = AssetDatabase.GetAssetPathsFromAssetBundle(stuffBundleName);
+            var sceneBundleAssetPaths = AssetDatabase.GetAssetPathsFromAssetBundle(sceneBundleName);
+            var infoBundleAssetPaths = AssetDatabase.GetAssetPathsFromAssetBundle(infoBundleName);
+            
+            foreach (var assetPath in stuffBundleAssetPaths)
+            {
+                if (!expectedStuffBundlePaths.Contains(assetPath))
+                {
+                    Debug.LogError($"{assetPath} is not expected to be in the stuff bundle but is!");
+                    return false;
+                }
+            }
+            foreach (var assetPath in sceneBundleAssetPaths)
+            {
+                if (!expectedSceneBundlePaths.Contains(assetPath))
+                {
+                    Debug.LogError($"{assetPath} is not expected to be in the scene bundle but is!");
+                    return false;
+                }
+            }
+            foreach (var assetPath in infoBundleAssetPaths)
+            {
+                if (!expectedInfoBundlePaths.Contains(assetPath))
+                {
+                    Debug.LogError($"{assetPath} is not expected to be in the info bundle but is!");
+                    return false;
+                }
+            }
+            
             // All assets are correctly assigned
             return true;
         }
@@ -531,7 +597,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             }
         }
 
-        private static bool CheckAssetBundleNameForAllProperties(Object unityObject, string assetsBundleName)
+        private static bool CheckAssetBundleNameForAllProperties(Object unityObject, string assetsBundleName, HashSet<string> expectedAssetPaths)
         {
             // Start the recursive checking process
             return CheckRecursively(unityObject);
@@ -542,7 +608,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 var so = new SerializedObject(obj);
                 var sp = so.GetIterator();
 
-                if (!CheckAssetBundleName(obj, assetsBundleName))
+                if (!CheckAssetBundleName(obj, assetsBundleName, expectedAssetPaths))
                 {
                     // Asset is not assigned to the correct bundle
                     return false;
@@ -552,7 +618,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 {
                     if (sp.propertyType == SerializedPropertyType.ObjectReference && sp.objectReferenceValue != null)
                     {
-                        if (!CheckAssetBundleName(sp.objectReferenceValue, assetsBundleName))
+                        if (!CheckAssetBundleName(sp.objectReferenceValue, assetsBundleName, expectedAssetPaths))
                         {
                             // Asset is not assigned to the correct bundle
                             return false;
@@ -573,7 +639,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         private static bool CanAssetBeImported(string assetPath)
         {
             // Don't try to touch default unity assets
-            if(assetPath == "Library/unity default resources" || assetPath == "Resources/unity_builtin_extra") return false;
+            if(assetPath == "Library/unity default resources" || assetPath == "Library/unity editor resources" || assetPath == "Resources/unity_builtin_extra") return false;
 
             // Exclude script assets and package assets
             if (string.IsNullOrEmpty(assetPath) || assetPath.EndsWith(".cs") ||
@@ -592,7 +658,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             return true;
         }
 
-        private static bool CheckAssetBundleName(Object unityObject, string assetBundleName)
+        private static bool CheckAssetBundleName(Object unityObject, string assetBundleName, HashSet<string> expectedAssetPaths)
         {
             var baseAssetPath = AssetDatabase.GetAssetPath(unityObject);
             
@@ -600,6 +666,7 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             if(!CanAssetBeImported(baseAssetPath)) return true;
             
             var baseImportedAsset = AssetImporter.GetAtPath(baseAssetPath);
+            expectedAssetPaths.Add(baseAssetPath);
             if (baseImportedAsset != null) return baseImportedAsset.assetBundleName == assetBundleName;
             
             Debug.LogWarning($"Failed to import asset at path {baseAssetPath}");
