@@ -15,7 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Editor
+namespace Innerworld.Editor
 {
     public class BuildSizeViewer : EditorWindow {
         
