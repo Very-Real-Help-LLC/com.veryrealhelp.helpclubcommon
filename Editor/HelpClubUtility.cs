@@ -224,7 +224,8 @@ namespace VeryRealHelp.HelpClubCommon.Editor
             new CheckSet() { label = "Project Settings", checks = WorldValidator.settingsChecks, autoFix = true },
             new CheckSet() { label = "Scene Requirements", checks = WorldValidator.sceneRequirementChecks, autoFix = false },
             new CheckSet() { label = "Scene Suggestions", checks = sceneSuggestions, autoFix = false, severity = CheckSet.Severity.Suggestion },
-            new CheckSet() { label = "World Info Files", checks = WorldValidator.worldInfoChecks, autoFix = false},
+            new CheckSet() { label = "Asset Bundles", checks = WorldValidator.assetBundleChecks, autoFix = true, severity = CheckSet.Severity.Requirement},
+            new CheckSet() { label = "World Info Files", checks = WorldValidator.worldInfoChecks, autoFix = true, severity = CheckSet.Severity.Requirement},
             //new CheckSet() { label = "Assets", checks = assetChecks, autoFix = false, severity = CheckSet.Severity.Suggestion },
         };
 
