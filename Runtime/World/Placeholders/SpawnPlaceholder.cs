@@ -9,19 +9,11 @@ namespace VeryRealHelp.HelpClubCommon.World
 {
     public class SpawnPlaceholder : Placeholder
     {
-        // This does not necessarily match the user roles in the client
-        public enum UserRole
-        {
-            Visitor,
-            Greeted,
-            Member,
-            Guide,
-        }
-
         [Serializable]
         public struct SpawnPoint
         {
-            public UserRole userRole;
+            [Tooltip("Examples of roles: visitor, member, greeter, guide, guardian, admin. These are subject to change.")]
+            public string minimumUserRole;
             public Transform spawnLocation;
         }
         
@@ -43,7 +35,7 @@ namespace VeryRealHelp.HelpClubCommon.World
                 Gizmos.DrawSphere(spawnPoint.spawnLocation.position, .1f);
                 #if UNITY_EDITOR
                 var labelPosition = spawnPoint.spawnLocation.position + Vector3.up;
-                Handles.Label(labelPosition, $"{spawnPoint.userRole} Spawn Point");
+                Handles.Label(labelPosition, $"{spawnPoint.minimumUserRole} Spawn Point");
                 #endif
             }
         }
