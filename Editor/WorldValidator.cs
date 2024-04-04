@@ -141,14 +141,21 @@ namespace VeryRealHelp.HelpClubCommon.Editor
                 }
             ),
             new CheckCollection.Check(
-                "SpawnPoints", "Should have a SpawnPoints Object",
-                () => GameObject.Find("SpawnPoints") != null,
-                () => new GameObject("SpawnPoints")
-            ),
+                "SpawnPoints", "Should have a SpawnPoints Object or a Spawn Component",
+                () =>
+                {
+                    bool foundSpawnComponent = GameObject.FindObjectOfType<SpawnPlaceholder>();
+                    bool foundSpawnPoints = GameObject.Find("SpawnPoints") != null;
+                    return foundSpawnComponent || foundSpawnPoints;
+                }),
             new CheckCollection.Check(
                 "SpawnPoints", "Should have at least 5 SpawnPoints",
-                () => GameObject.Find("SpawnPoints")?.transform.childCount >= 5
-            ),
+                () =>
+                {
+                    bool foundSpawnPoints = GameObject.FindObjectOfType<SpawnPlaceholder>()?.spawnPoints.Length >= 5;
+                    bool foundSpawnPointChildren = GameObject.Find("SpawnPoints")?.transform.childCount >= 5;
+                    return foundSpawnPoints || foundSpawnPointChildren;
+                }),
             new CheckCollection.Check(
                 "Lightmap Mode", "Should be Non-Directional",
                 () => LightmapSettings.lightmapsMode == LightmapsMode.NonDirectional,
