@@ -33,17 +33,14 @@ namespace VeryRealHelp.HelpClubCommon.Editor.Automation
                     targets.Add(BuildTarget.StandaloneOSX);
                 if (args.ContainsKey("win"))
                     targets.Add(BuildTarget.StandaloneWindows);
-
-#if UNITY_EDITOR_OSX
-                 if (args.ContainsKey("ios"))
+                if (args.ContainsKey("ios"))
                     targets.Add(BuildTarget.iOS);
-
+#if UNITY_EDITOR_OSX
                  if (targets.Count == 0)  // if no targets specified, target all
                     targets = new HashSet<BuildTarget> { BuildTarget.iOS };
 #else
-
                 if (targets.Count == 0)  // if no targets specified, target all
-                    targets = new HashSet<BuildTarget> { BuildTarget.Android, BuildTarget.StandaloneOSX, BuildTarget.StandaloneWindows };
+                    targets = new HashSet<BuildTarget> { BuildTarget.Android, BuildTarget.StandaloneOSX, BuildTarget.StandaloneWindows, BuildTarget.iOS};
 #endif
             }
 
