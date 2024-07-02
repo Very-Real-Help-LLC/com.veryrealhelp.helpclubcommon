@@ -64,13 +64,11 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         [MenuItem("VRH/Bundles/Build IOS Bundles")]
         public static void BuildBundlesIOS()
         {
-#if UNITY_EDITOR_OSX
             Debug.Log("Building IOS Bundles...");
             string directory = "AssetBundles/IOS";
             Directory.CreateDirectory(directory);
             BuildPipeline.BuildAssetBundles(directory, bundleOptions, BuildTarget.iOS);
             Debug.Log("Finished Building IOS Bundles");
-#endif
         }
     }
 
