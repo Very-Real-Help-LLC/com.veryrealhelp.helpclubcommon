@@ -1,67 +1,81 @@
-name: CI
+name: Cloud Builds
 
 on:
   release:
     types: [created]
 
-
 jobs:
-  job1:    
-    name: Build iOS Bundles
-    runs-on: [self-hosted, macOS]
+  build_matrix: 
+    name: Bundle
+    runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
-      matrix:
-        projectPath: 
-          - .
-        targetPlatform:
-          - StandaloneWindows
-    env:
-      ACTION_LOG_FILE: "${{ github.run_id }}_${{ github.run_number }}.log"
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Checkout LFS objects
-        run: git lfs checkout
-      - name: Run jobRunnerPowershell script
-        run: .\runner_job.ps1
-        shell: pwsh
-      - uses: rennat/upload-s3-action@master
-        with:
-          AWS_S3_BUCKET: 'vrh-test'
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'us-east-1'
-          SOURCE_DIR: 'Build'
-          DEST_DIR: '/HelpClubWorldBundles/${{ github.repository }}/${{ github.ref }}/'
+      fail-fast: false
+      matrix: 
+        targetPlatform: ['StandaloneWindows', 'StandaloneOSX', 'Android', 'iOS']
+        include:
+          - targetPlatform: StandaloneWindows
+            libraryKey: Library-Windows
+            customParameters: -win
+          - targetPlatform: StandaloneOSX
+            libraryKey: Library-OSX
+            customParameters: -osx
+          - targetPlatform: Android
+            libraryKey: Library-Android
+            customParameters: -android
+            freeDiskSpaceAndroid: true
+          - targetPlatform: iOS
+            libraryKey: Library-iOS
+            customParameters: -ios
 
-  job2: 
-    name: Build Other Bundles 
-    runs-on: [self-hosted, windows, bundles]
-    strategy:
-      fail-fast: true
-      matrix:
-        projectPath: 
-          - .
-        targetPlatform:
-          - StandaloneWindows
-    env:
-      ACTION_LOG_FILE: "${{ github.run_id }}_${{ github.run_number }}.log"
     steps:
-      - uses: actions/checkout@v2
+      - if: ${{matrix.freeDiskSpaceAndroid}}
+        name: Free Disk Space (Android)
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
+          
+      - name: Checkout code
+        uses: nschloe/action-cached-lfs-checkout@d481127c3821f9c278a6019c39a108ac7004c133
+          
+      - name: SSH-Agent
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387
         with:
-          lfs: true
-      - name: Checkout LFS objects
-        run: git lfs checkout
-      - name: Run jobRunnerPowershell script
-        run: .\runner_job.ps1
-        shell: powershell
-      - uses: rennat/upload-s3-action@master
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      - name: "Add GitHub to the SSH known hosts file"
+        run: |
+          mkdir -p -m 0700 /home/runner/.ssh
+          curl --silent https://api.github.com/meta  | jq --raw-output '"github.com "+.ssh_keys[]' >> /home/runner/.ssh/known_hosts
+          chmod 600 /home/runner/.ssh/known_hosts
+          
+      - name: Setup GitHub Cache
+        uses: pat-s/always-upload-cache@9a0d1c3e1a8260b05500f9b67a5be8f2a1299819
         with:
-          AWS_S3_BUCKET: 'vrh-test'
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'us-east-1'
-          SOURCE_DIR: 'Build'
-          DEST_DIR: '/HelpClubWorldBundles/${{ github.repository }}/${{ github.ref }}/'
+          path: Library
+          key: ${{matrix.libraryKey}}
+
+      - name: Unity Build
+        uses: game-ci/unity-builder@f4d2cceeb5831fd9dc4588d1b39d5f2dca8f28e6
+        id: unitybuild
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          targetPlatform: ${{matrix.targetPlatform}}
+          sshAgent: ${{ env.SSH_AUTH_SOCK }}
+          buildMethod: VeryRealHelp.HelpClubCommon.Editor.Automation.BatchBuild.Build
+          customParameters: ${{matrix.customParameters}}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+  
+      - name: Deploy to S3
+        run: aws s3 sync ./Build s3://vrh-test/HelpClubWorldBundles/${{ github.repository }}/${{ github.ref }}/

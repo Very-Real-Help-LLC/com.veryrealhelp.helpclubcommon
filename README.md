@@ -6,7 +6,7 @@ Add a package dependency on this github repository to the `<Project>/Packages/ma
 
 You can do this by adding the following line to the `manifest.json` file in the `dependencies` section:
 
-```"com.veryrealhelp.helpclubcommon": "https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git#0.0.5"```
+```"com.veryrealhelp.helpclubcommon": "https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git#0.10.5"```
 
 _See the [releases page](https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon/releases) to find the most current version number._
 
@@ -20,7 +20,7 @@ _Yours may vary_
     "com.unity.package-manager-ui": "2.0.8",
     "com.unity.purchasing": "2.0.3",
     "com.unity.textmeshpro": "1.4.1",
-    "com.veryrealhelp.helpclubcommon": "https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git#0.3.13"
+    "com.veryrealhelp.helpclubcommon": "https://github.com/Very-Real-Help-LLC/com.veryrealhelp.helpclubcommon.git#0.10.5"
   }
 }
 ```
