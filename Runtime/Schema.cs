@@ -8,6 +8,7 @@ namespace VeryRealHelp.HelpClubCommon.Schema
     public class BundleSetDefinition
     {
         public string uriRoot;
+        public string uriRoot2021;
         public string devUriRoot;
         public string androidPath;
         public string osxPath;
