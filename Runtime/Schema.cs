@@ -37,12 +37,13 @@ namespace VeryRealHelp.HelpClubCommon.Schema
             }
         }
 
-        public string Uri => $"{uriRoot2021}/{Path}";
+        protected string Root => string.IsNullOrWhiteSpace(uriRoot2021) ? uriRoot : uriRoot2021;  // apply new or fallback to old
+        public string Uri => $"{Root}/{Path}";
         public string DevUri => string.IsNullOrWhiteSpace(devUriRoot) ? Uri : $"{devUriRoot}/{Path}";
         public string AssetPath => $"{Application.streamingAssetsPath}/{Path}";
         public string ManifestPath => $"{Path}/{Path.Split('/').Last()}";
         public string ManifestAssetPath => $"{Application.streamingAssetsPath}/{ManifestPath}";
-        public string ManifestUri => $"{uriRoot2021}/{ManifestPath}";
+        public string ManifestUri => $"{Root}/{ManifestPath}";
         public string DevManifestUri => string.IsNullOrWhiteSpace(devUriRoot) ? ManifestUri : $"{devUriRoot}/{ManifestPath}";
     }
 
