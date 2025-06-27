@@ -31,10 +31,14 @@ jobs:
       - if: ${{matrix.freeDiskSpaceAndroid}}
         name: Free Disk Space (Android)
         run: |
+          df -h
+          echo "cleaning swap"
           sudo swapoff -a
           sudo rm -f /swapfile
           sudo apt clean
-          docker rmi $(docker image ls -aq)
+          df -h
+          echo "cleaning images"
+          docker rmi $(docker image ls -aq) || echo "no images to delete"
           df -h
           
       - name: Checkout code
