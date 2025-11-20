@@ -10,6 +10,8 @@ public class ContentStationPlaceholder : Placeholder
 {
         public string webUiPath;
 
+        public bool allowPlayerSpawnPosition = false;
+
 #region ContentStation Positions
         [Header("Content Station Positions")]
         public Transform recordingPosition;
@@ -17,6 +19,7 @@ public class ContentStationPlaceholder : Placeholder
         public Transform[] aiAgentToolSpawnPoints;
         public Transform portalPosition;
         public Transform toolPosition;
+        public Transform playerSpawnPosition;
 #endregion
         public Canvas contentStationCanvas;
         public Button button;
@@ -52,6 +55,11 @@ public class ContentStationPlaceholder : Placeholder
             if (toolPosition == null)
             {
                 toolPosition = CreateChildTransform("ToolPosition");
+            }
+
+            if (playerSpawnPosition == null)
+            {
+                playerSpawnPosition = CreateChildTransform("PlayerSpawnPosition");
             }
         }
 
@@ -118,6 +126,14 @@ public class ContentStationPlaceholder : Placeholder
                 Gizmos.color = Color.magenta;
                 Gizmos.DrawSphere(toolPosition.position, 0.05f);
                 Handles.Label(toolPosition.position + Vector3.up * 0.2f, "Tool");
+            }
+
+            // Draw player spawn position
+            if (playerSpawnPosition != null)
+            {
+                Gizmos.color = Color.blue;
+                Gizmos.DrawSphere(playerSpawnPosition.position, 0.05f);
+                Handles.Label(playerSpawnPosition.position + Vector3.up * 0.2f, "Player Spawn");
             }
         }
 

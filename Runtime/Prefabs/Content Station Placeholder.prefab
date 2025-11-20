@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &28582669839352127
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3947593549439464808}
+  m_Layer: 0
+  m_Name: PlayerSpawnPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3947593549439464808
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 28582669839352127}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.25, z: -0.915}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5996010402689853399}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &789846786520353985
 GameObject:
   m_ObjectHideFlags: 0
@@ -209,6 +240,7 @@ Transform:
   - {fileID: 6522955122034658812}
   - {fileID: 3448105810504570589}
   - {fileID: 5741199607113597577}
+  - {fileID: 3947593549439464808}
   - {fileID: 4630975669715738462}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -234,6 +266,7 @@ MonoBehaviour:
   - {fileID: 6522955122034658812}
   portalPosition: {fileID: 3448105810504570589}
   toolPosition: {fileID: 5741199607113597577}
+  playerSpawnPosition: {fileID: 3947593549439464808}
   contentStationCanvas: {fileID: 5079377492795355538}
   button: {fileID: 996594010613130461}
 --- !u!1 &6021771121826196436
@@ -455,7 +488,7 @@ RectTransform:
   m_Children:
   - {fileID: 6861631263850700372}
   m_Father: {fileID: 5996010402689853399}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
