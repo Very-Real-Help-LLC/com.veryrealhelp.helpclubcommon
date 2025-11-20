@@ -8,8 +8,6 @@ namespace VeryRealHelp.HelpClubCommon.World
 {
 public class ContentStationPlaceholder : Placeholder
 {
-        private static readonly Vector3 mirrorSize = new Vector3(2.5f, 0.15f, 2.5f);
-
         public string webUiPath;
 
 #region ContentStation Positions
@@ -123,7 +121,7 @@ public class ContentStationPlaceholder : Placeholder
             }
         }
 
-        public void OnDrawGizmosSelected()
+        private void OnDrawGizmosSelected()
         {
             if (isActiveAndEnabled)
             {
@@ -131,7 +129,7 @@ public class ContentStationPlaceholder : Placeholder
             }
         }
 
-        public void OnDrawGizmos()
+        private void OnDrawGizmos()
         {
             if (!isActiveAndEnabled)
                 return;
