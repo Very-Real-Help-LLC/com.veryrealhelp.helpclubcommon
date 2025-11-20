@@ -39,5 +39,19 @@ namespace VeryRealHelp.HelpClubCommon.Editor
         [MenuItem("VRH/Placeholders/Bulletin Board Placeholder")]
         public static void CreateBulletinboardPlaceholder(MenuCommand menuCommand) => CreatePlaceholder<BulletinboardPlaceholder>(menuCommand, "Bulletin Board Placeholder");
 
+        [MenuItem("VRH/Placeholders/Content Station Placeholder")]
+        public static void CreateContentStationPlaceholder(MenuCommand menuCommand)
+        {
+            if (PlaceholderPrefabs.Instance?.contentStationPrefab == null)
+            {
+                Debug.LogError("Content Station prefab not found. Please assign it in the PlaceholderPrefabs asset.");
+                return;
+            }
+
+            GameObject obj = PrefabUtility.InstantiatePrefab(PlaceholderPrefabs.Instance.contentStationPrefab) as GameObject;
+            GameObjectUtility.SetParentAndAlign(obj, menuCommand.context as GameObject);
+            Undo.RegisterCreatedObjectUndo(obj, "Create " + obj.name);
+            Selection.activeObject = obj;
+        }
     }
 }
